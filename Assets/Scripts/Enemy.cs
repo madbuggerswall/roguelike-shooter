@@ -49,19 +49,18 @@ public class Enemy : MonoBehaviour {
 	}
 
 	IEnumerator dash(Transform target, float cooldownDuration) {
-		float dashSpeed = 8;
+		float speed = 8;
 		float drag = 8;
-		float dashDistance = 4;
+		float distance = 4;
 
 		Vector2 direction = ((Vector2) target.position - rigidBody.position).normalized;
 		Vector2 initialPosition = rigidBody.position;
-		Vector2 targetPosition = rigidBody.position + direction * dashDistance;
+		Vector2 targetPosition = rigidBody.position + direction * distance;
 		
-		for (float t = 0; t < 1; t += dashSpeed / dashDistance * Time.fixedDeltaTime) {
-			// Vector2 towards = Vector2.Lerp(initialPosition, targetPosition, t);
-			Vector2 towards = Vector2.MoveTowards(rigidBody.position, targetPosition, dashSpeed * Time.fixedDeltaTime);
+		for (float t = 0; t < 1; t += speed / distance * Time.fixedDeltaTime) {
+			Vector2 towards = Vector2.Lerp(initialPosition, targetPosition, t);
 			rigidBody.MovePosition(towards);
-			dashSpeed -= drag * Time.fixedDeltaTime;
+			speed -= drag * Time.fixedDeltaTime;
 			yield return new WaitForFixedUpdate();
 		}
 	}
