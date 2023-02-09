@@ -12,9 +12,6 @@ public class Enemy : MonoBehaviour {
 	[SerializeField] int damage;
 
 	Rigidbody2D rigidBody;
-	Transform target;
-	Vector3 movementDir;
-
 	UnityAction movementAction;
 
 	void Awake() {
@@ -22,39 +19,82 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void Start() {
-		target = LevelManager.getInstance().getPlayer().transform;
-		StartCoroutine(checkForTargetPeriodically(2f));
+		StartCoroutine(checkForTargetPeriodically(2f, 1f));
 	}
 
 	void FixedUpdate() {
 		movementAction();
-		stride();
 	}
 
-	void moveTowardsTarget() {
-		movementDir = (target.position - transform.position).normalized;
-		Vector3 towards = Vector3.MoveTowards(transform.position, target.position, movementSpeed * Time.fixedDeltaTime);
+	void moveTowardsTarget(Vector3 targetPosition) {
+		Vector3 towards = Vector3.MoveTowards(rigidBody.position, targetPosition, movementSpeed * Time.fixedDeltaTime);
 		rigidBody.MovePosition(towards);
 	}
 
-	void stride() {
+	void stride(float movementSpeed) {
 		const float angleRange = 16;
 		const float freqMul = 4;
-
-		float movement = Mathf.Clamp01(Mathf.Abs(movementDir.x) + Mathf.Abs(movementDir.y));
-		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * movement * Time.time));
+		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * Time.time));
 	}
 
-	IEnumerator checkForTargetPeriodically(float period) {
+	void squeezeAndStretch(Vector2 direction) {
+		float squeezeMul = 0.1f;
+		float stretchMul = 0.1f;
+		Vector2 originalScale = Vector2.one;
+
+		(float x, float y) scale;
+		scale.x = stretchMul * Mathf.Abs(direction.x) - squeezeMul * Mathf.Abs(direction.y);
+		scale.y = stretchMul * Mathf.Abs(direction.y) - squeezeMul * Mathf.Abs(direction.x);
+		transform.localScale = originalScale + new Vector2(scale.x, scale.y);
+	}
+
+	IEnumerator dash(Transform target, float cooldownDuration) {
+		float dashSpeed = 8;
+		float drag = 8;
+		float dashDistance = 4;
+
+		Vector2 direction = ((Vector2) target.position - rigidBody.position).normalized;
+		Vector2 initialPosition = rigidBody.position;
+		Vector2 targetPosition = rigidBody.position + direction * dashDistance;
+		
+		for (float t = 0; t < 1; t += dashSpeed / dashDistance * Time.fixedDeltaTime) {
+			// Vector2 towards = Vector2.Lerp(initialPosition, targetPosition, t);
+			Vector2 towards = Vector2.MoveTowards(rigidBody.position, targetPosition, dashSpeed * Time.fixedDeltaTime);
+			rigidBody.MovePosition(towards);
+			dashSpeed -= drag * Time.fixedDeltaTime;
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
+	IEnumerator checkForTargetPeriodically(float radius, float period) {
+		Transform target = LevelManager.getInstance().getPlayer().transform;
+
 		// While player is alive/not beaten
 		while (true) {
-			if (Vector3.Distance(target.position, transform.position) <= 2) {
+			if (Vector3.Distance(target.position, transform.position) <= radius) {
 				movementAction = delegate { };
+				stride(0);
+				StartCoroutine(dash(target, 1f));
 			} else {
-				movementAction = moveTowardsTarget;
+				movementAction = delegate {
+					moveTowardsTarget(target.position);
+					stride(movementSpeed);
+				};
 			}
 
 			yield return new WaitForSeconds(period);
 		}
 	}
+
+	// Vector3 getAvailablePositionAroundTarget() {
+	// Vector2[] directions = new Vector2[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
+	// Vector3 targetPosition;
+
+	// foreach (Vector2 direction in directions) {
+
+	// }
+	// }
+
+	// IEnumerator dash(Transform target) {
+	// }
 }

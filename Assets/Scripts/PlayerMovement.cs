@@ -9,18 +9,14 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] float squeezeScale = 0.5f;
 	[SerializeField] float stretchScale = 1.5f;
 
-	[SerializeField] float wobbleDuration = 0.5f;
-	[SerializeField] float wobbleSpeed = 20f;
-	[SerializeField] float wobbleAmount = 0.05f;
+
 
 	Rigidbody2D rigidBody;
 	Vector2 movementDir;
-	Vector3 originalScale;
-	bool isWobbling = false;
+	Coroutine wobblingRoutine;
 
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
-		originalScale = transform.localScale;
 	}
 
 	// void OnMove(InputValue value) {
@@ -34,14 +30,9 @@ public class PlayerMovement : MonoBehaviour {
 	void FixedUpdate() {
 		rigidBody.MovePosition(rigidBody.position + movementDir * movementSpeed * Time.fixedDeltaTime);
 		stride();
-		// squeezeAndStretch();
 	}
 
-	void OnCollisionEnter2D(Collision2D collision) {
-		if (!isWobbling) {
-			StartCoroutine(Wobble());
-		}
-	}
+
 
 	// Strut, walk animation
 	void stride() {
@@ -50,16 +41,6 @@ public class PlayerMovement : MonoBehaviour {
 
 		float movement = Mathf.Clamp01(Mathf.Abs(movementDir.x) + Mathf.Abs(movementDir.y));
 		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * movement * Time.time));
-	}
-
-	void squeezeAndStretch() {
-		float squeezeMul = 0.1f;
-		float stretchMul = 0.1f;
-
-		(float x, float y) scale;
-		scale.x = stretchMul * Mathf.Abs(movementDir.x) - squeezeMul * Mathf.Abs(movementDir.y);
-		scale.y = stretchMul * Mathf.Abs(movementDir.y) - squeezeMul * Mathf.Abs(movementDir.x);
-		transform.localScale = originalScale + new Vector3(scale.x, scale.y, 0);
 	}
 
 	// Prototyping
@@ -79,17 +60,5 @@ public class PlayerMovement : MonoBehaviour {
 		} else {
 			movementDir.x = 0f;
 		}
-	}
-
-	private IEnumerator Wobble() {
-		isWobbling = true;
-		float elapsedTime = 0f;
-		while (elapsedTime < wobbleDuration) {
-			transform.localScale = originalScale + Vector3.one * Mathf.Sin(elapsedTime * wobbleSpeed) * wobbleAmount;
-			elapsedTime += Time.deltaTime;
-			yield return null;
-		}
-		transform.localScale = originalScale;
-		isWobbling = false;
 	}
 }

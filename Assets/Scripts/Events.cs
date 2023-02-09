@@ -3,11 +3,11 @@ using UnityEngine.Events;
 class Events {
 	static Events instance;
 
-	public UnityEvent enemyBeaten;
+	public UnityEvent playerHit;
 
 
 	Events() {
-		enemyBeaten = new UnityEvent();
+		playerHit = new UnityEvent();
 	}
 
 	// Singleton
