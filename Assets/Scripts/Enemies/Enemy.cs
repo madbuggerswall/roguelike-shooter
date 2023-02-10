@@ -15,12 +15,12 @@ public class Enemy : MonoBehaviour {
 	[SerializeField] float movementSpeed;
 
 	Rigidbody2D rigidBody;
-	BoxCollider2D boxCollider;
+	CircleCollider2D circleCollider;
 	UnityAction movementAction;
 
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
-		boxCollider = GetComponent<BoxCollider2D>();
+		circleCollider = GetComponent<CircleCollider2D>();
 	}
 
 	void Start() {
@@ -44,12 +44,12 @@ public class Enemy : MonoBehaviour {
 			// Stop and die
 			movementAction = delegate { };
 			stride(0);
+			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
 		}
 	}
 
 	IEnumerator die(float duration) {
-
 		Vector2 initialPosition = rigidBody.position;
 		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
 			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
@@ -63,7 +63,7 @@ public class Enemy : MonoBehaviour {
 
 	IEnumerator notice(float duration) {
 		exclamation.SetActive(true);
-		boxCollider.enabled = false;
+		circleCollider.enabled = false;
 
 		Vector2 initialPosition = rigidBody.position;
 		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
@@ -72,7 +72,7 @@ public class Enemy : MonoBehaviour {
 		}
 
 		exclamation.SetActive(false);
-		boxCollider.enabled = true;
+		circleCollider.enabled = true;
 	}
 
 	void moveTowardsTarget(Vector3 targetPosition) {

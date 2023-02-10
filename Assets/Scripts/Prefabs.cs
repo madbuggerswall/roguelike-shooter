@@ -7,8 +7,8 @@ public class Prefabs : MonoBehaviour {
 	static Prefabs instance;
 
 	[Header("Enemies")]
-	[SerializeField] Enemy redBastard;
-	
+	[SerializeField] Enemy jelly;
+
 	[Header("Projectiles")]
 	[SerializeField] Projectile sword;
 
@@ -16,6 +16,8 @@ public class Prefabs : MonoBehaviour {
 	void Awake() {
 		assertSingleton();
 	}
+
+	public Enemy getEnemy() { return jelly; }
 
 	// Singleton
 	public static Prefabs getInstance() { return instance; }
