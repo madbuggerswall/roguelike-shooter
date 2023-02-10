@@ -6,11 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour {
 	[SerializeField] float movementSpeed = 4f;
 
-	[SerializeField] float squeezeScale = 0.5f;
-	[SerializeField] float stretchScale = 1.5f;
-
-
-
 	Rigidbody2D rigidBody;
 	Vector2 movementDir;
 	Coroutine wobblingRoutine;
@@ -31,8 +26,6 @@ public class PlayerMovement : MonoBehaviour {
 		rigidBody.MovePosition(rigidBody.position + movementDir * movementSpeed * Time.fixedDeltaTime);
 		stride();
 	}
-
-
 
 	// Strut, walk animation
 	void stride() {

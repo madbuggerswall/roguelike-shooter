@@ -7,7 +7,10 @@ public class Prefabs : MonoBehaviour {
 	static Prefabs instance;
 
 	[Header("Enemies")]
-	[SerializeField] Enemy enemy;
+	[SerializeField] Enemy redBastard;
+	
+	[Header("Projectiles")]
+	[SerializeField] Projectile sword;
 
 
 	void Awake() {

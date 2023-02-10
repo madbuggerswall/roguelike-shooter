@@ -8,10 +8,6 @@ public class Player : MonoBehaviour {
 	// Migrate te JuiceEffects
 	[SerializeField] GameObject flashEffect;
 
-	[SerializeField] float wobbleDuration = 0.5f;
-	[SerializeField] float wobbleSpeed = 20f;
-	[SerializeField] float wobbleAmount = 0.05f;
-
 	void Awake() {
 	}
 
@@ -21,6 +17,7 @@ public class Player : MonoBehaviour {
 		Events.getInstance().playerHit.Invoke();
 	}
 
+	// Juice effects
 	IEnumerator flash(float duration) {
 		flashEffect.SetActive(!flashEffect.activeInHierarchy);
 		yield return new WaitForSeconds(duration);
@@ -28,16 +25,20 @@ public class Player : MonoBehaviour {
 	}
 
 	IEnumerator wobble() {
+		float duration = 0.5f;
+		float speed = 40f;
+		float amount = 0.1f;
+
 		float elapsedTime = 0f;
 		Vector2 initialScale = transform.localScale;
 
-		while (elapsedTime < wobbleDuration) {
-			float scale = Mathf.Sin(elapsedTime * wobbleSpeed) * wobbleAmount;
+		while (elapsedTime < duration) {
+			float scale = Mathf.Sin(elapsedTime * speed) * amount;
 			transform.localScale = initialScale + Vector2.one * scale;
 			elapsedTime += Time.deltaTime;
 			yield return null;
 		}
-		
+
 		transform.localScale = initialScale;
 	}
 }

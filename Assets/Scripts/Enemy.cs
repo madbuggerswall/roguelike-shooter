@@ -6,16 +6,21 @@ using UnityEngine.Events;
 // Basic, Fast, Tank, Ranged, Boss
 
 public class Enemy : MonoBehaviour {
-	[SerializeField] float movementSpeed;
+	[SerializeField] GameObject flashEffect;
+	[SerializeField] GameObject exclamation;
 
 	[SerializeField] int health;
 	[SerializeField] int damage;
 
+	[SerializeField] float movementSpeed;
+
 	Rigidbody2D rigidBody;
+	BoxCollider2D boxCollider;
 	UnityAction movementAction;
 
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
+		boxCollider = GetComponent<BoxCollider2D>();
 	}
 
 	void Start() {
@@ -24,6 +29,50 @@ public class Enemy : MonoBehaviour {
 
 	void FixedUpdate() {
 		movementAction();
+	}
+
+	// Take damage and notify evetns if beaten 
+	// Stop moving when taken damage
+	public void takeDamage(int damage) {
+		health -= damage;
+		StartCoroutine(flash(0.5f));
+		StartCoroutine(wobble());
+		Events.getInstance().enemyHit.Invoke();
+		// updateHealthBar();
+
+		if (health <= 0) {
+			// Stop and die
+			movementAction = delegate { };
+			stride(0);
+			StartCoroutine(die(0.5f));
+		}
+	}
+
+	IEnumerator die(float duration) {
+
+		Vector2 initialPosition = rigidBody.position;
+		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+			rigidBody.MoveRotation(elapsedTime / duration * 90);
+			yield return new WaitForFixedUpdate();
+		}
+
+		// Events.getInstance().enemyBeaten.Invoke(getEnemyType());
+		gameObject.SetActive(false);
+	}
+
+	IEnumerator notice(float duration) {
+		exclamation.SetActive(true);
+		boxCollider.enabled = false;
+
+		Vector2 initialPosition = rigidBody.position;
+		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+			yield return new WaitForFixedUpdate();
+		}
+
+		exclamation.SetActive(false);
+		boxCollider.enabled = true;
 	}
 
 	void moveTowardsTarget(Vector3 targetPosition) {
@@ -37,30 +86,18 @@ public class Enemy : MonoBehaviour {
 		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * Time.time));
 	}
 
-	void squeezeAndStretch(Vector2 direction) {
-		float squeezeMul = 0.1f;
-		float stretchMul = 0.1f;
-		Vector2 originalScale = Vector2.one;
-
-		(float x, float y) scale;
-		scale.x = stretchMul * Mathf.Abs(direction.x) - squeezeMul * Mathf.Abs(direction.y);
-		scale.y = stretchMul * Mathf.Abs(direction.y) - squeezeMul * Mathf.Abs(direction.x);
-		transform.localScale = originalScale + new Vector2(scale.x, scale.y);
-	}
-
-	IEnumerator dash(Transform target, float cooldownDuration) {
+	IEnumerator dash(Transform target) {
 		float speed = 8;
 		float drag = 8;
 		float distance = 4;
 
 		Vector2 direction = ((Vector2) target.position - rigidBody.position).normalized;
-		Vector2 initialPosition = rigidBody.position;
 		Vector2 targetPosition = rigidBody.position + direction * distance;
-		
-		for (float t = 0; t < 1; t += speed / distance * Time.fixedDeltaTime) {
-			Vector2 towards = Vector2.Lerp(initialPosition, targetPosition, t);
+
+		while (rigidBody.position != targetPosition) {
+			Vector3 towards = Vector3.MoveTowards(rigidBody.position, targetPosition, speed * Time.fixedDeltaTime);
 			rigidBody.MovePosition(towards);
-			speed -= drag * Time.fixedDeltaTime;
+			speed = Mathf.Clamp(speed - drag * Time.deltaTime, 1f, 8f);
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -71,9 +108,18 @@ public class Enemy : MonoBehaviour {
 		// While player is alive/not beaten
 		while (true) {
 			if (Vector3.Distance(target.position, transform.position) <= radius) {
+				// Stop
 				movementAction = delegate { };
 				stride(0);
-				StartCoroutine(dash(target, 1f));
+
+				// Notice
+				Events.getInstance().playerNoticed.Invoke();
+				yield return notice(0.5f);
+				yield return new WaitForSeconds(0.5f);
+
+				// Attack
+				yield return dash(target);
+				yield return new WaitForSeconds(0.5f);
 			} else {
 				movementAction = delegate {
 					moveTowardsTarget(target.position);
@@ -85,15 +131,29 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
-	// Vector3 getAvailablePositionAroundTarget() {
-	// Vector2[] directions = new Vector2[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
-	// Vector3 targetPosition;
 
-	// foreach (Vector2 direction in directions) {
+	// Juice effects
+	IEnumerator flash(float duration) {
+		flashEffect.SetActive(!flashEffect.activeInHierarchy);
+		yield return new WaitForSeconds(duration);
+		flashEffect.SetActive(!flashEffect.activeInHierarchy);
+	}
 
-	// }
-	// }
+	IEnumerator wobble() {
+		float duration = 0.5f;
+		float speed = 40f;
+		float amount = 0.1f;
 
-	// IEnumerator dash(Transform target) {
-	// }
+		float elapsedTime = 0f;
+		Vector2 initialScale = transform.localScale;
+
+		while (elapsedTime < duration) {
+			float scale = Mathf.Sin(elapsedTime * speed) * amount;
+			transform.localScale = initialScale + Vector2.one * scale;
+			elapsedTime += Time.deltaTime;
+			yield return null;
+		}
+
+		transform.localScale = initialScale;
+	}
 }
