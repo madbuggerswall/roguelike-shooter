@@ -7,7 +7,8 @@ public class Prefabs : MonoBehaviour {
 	static Prefabs instance;
 
 	[Header("Enemies")]
-	[SerializeField] Enemy jelly;
+	[SerializeField] Jelly jelly;
+	[SerializeField] Ghost ghost;
 
 	[Header("Projectiles")]
 	[SerializeField] Projectile sword;
@@ -17,7 +18,16 @@ public class Prefabs : MonoBehaviour {
 		assertSingleton();
 	}
 
-	public Enemy getEnemy() { return jelly; }
+	public Enemy getEnemy(EnemyType enemyType) {
+		switch (enemyType) {
+			case EnemyType.jelly:
+				return jelly;
+			case EnemyType.ghost:
+				return ghost;
+			default:
+				return jelly;
+		}
+	}
 
 	// Singleton
 	public static Prefabs getInstance() { return instance; }

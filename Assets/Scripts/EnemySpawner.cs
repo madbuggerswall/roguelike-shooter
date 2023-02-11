@@ -20,11 +20,10 @@ public class EnemySpawner : MonoBehaviour {
 
 	// Spawn waves periodically every waveBreak seconds
 	IEnumerator spawnWaves(WaveContainer waveContainer) {
-		int waveCount = 1;
-
 		Queue<Wave> waveQueue = waveContainer.getQueue();
-		while (waveQueue.Count > 0) {
-			// Events.getInstance().waveBegan.Invoke(waveCount++);
+
+		for (int waveCount = 0; waveCount < waveQueue.Count; waveCount++) {
+			Events.getInstance().waveBegan.Invoke(waveCount++);
 			yield return new WaitForSeconds(waveBreak);
 			yield return spawnEnemies(waveQueue.Dequeue());
 		}
@@ -32,14 +31,10 @@ public class EnemySpawner : MonoBehaviour {
 
 	// Spawn enemies periodically every Wave.period seconds
 	IEnumerator spawnEnemies(Wave wave) {
-		Queue<Enemy> enemyQueue = wave.getEnemyQueue();
+		Queue<EnemyType> enemyQueue = wave.getEnemyQueue();
 
 		while (enemyQueue.Count > 0) {
-			Enemy enemyPrefab = enemyQueue.Dequeue();
-			
-			if (enemyPrefab is null)
-				Debug.Log("Enemy null");
-			
+			Enemy enemyPrefab = Prefabs.getInstance().getEnemy(enemyQueue.Dequeue());
 			objectPool.spawn(enemyPrefab.gameObject, transform.position);
 			yield return new WaitForSeconds(wave.getPeriod());
 		}

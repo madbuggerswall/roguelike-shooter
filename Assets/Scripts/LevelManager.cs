@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Make the projectiles rigidbodies and move linear.
+
 // Mediator
 public class LevelManager : MonoBehaviour {
 	static LevelManager instance;

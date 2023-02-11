@@ -11,19 +11,17 @@ public class WaveContainer {
 
 	// Manual creation of waves. Monsters spawn more frequently as waves proceed
 	void initializeWaves() {
-		Enemy enemy = Prefabs.getInstance().getEnemy();
-
 		Wave wave1 = new Wave(4f);
 		wave1.setEnemies(
-			enemy,
-			enemy,
-			enemy,
-			enemy);
+			EnemyType.jelly,
+			EnemyType.jelly,
+			EnemyType.jelly,
+			EnemyType.jelly);
 
 		Wave wave2 = new Wave(4f);
 		wave2.setEnemies(
-			(8, enemy),
-			(4, enemy));
+			(8, EnemyType.jelly),
+			(4, EnemyType.ghost));
 
 
 		queue = new Queue<Wave>();

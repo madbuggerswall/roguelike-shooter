@@ -10,6 +10,8 @@ class Events {
 
 	public UnityEvent enemyHit;
 
+	public UnityEvent<int> waveBegan;
+
 	Events() {
 		playerHit = new UnityEvent();
 		playerNoticed = new UnityEvent();
@@ -17,6 +19,8 @@ class Events {
 		projectileThrown = new UnityEvent();
 
 		enemyHit = new UnityEvent();
+
+		waveBegan = new UnityEvent<int>();
 	}
 
 	// Singleton

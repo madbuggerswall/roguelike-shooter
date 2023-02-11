@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 
 // Basic, Fast, Tank, Ranged, Boss
-
-public class Enemy : MonoBehaviour {
+[RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
+public abstract class Enemy : MonoBehaviour {
 	[SerializeField] GameObject flashEffect;
 	[SerializeField] GameObject exclamation;
 
@@ -16,11 +16,14 @@ public class Enemy : MonoBehaviour {
 
 	Rigidbody2D rigidBody;
 	CircleCollider2D circleCollider;
+
 	UnityAction movementAction;
 
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
+
+		rigidBody.isKinematic = true;
 	}
 
 	void Start() {
