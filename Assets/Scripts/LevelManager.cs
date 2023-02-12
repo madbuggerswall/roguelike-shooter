@@ -13,6 +13,9 @@ public class LevelManager : MonoBehaviour {
 	void Awake() {
 		assertSingleton();
 
+		// GameManager
+		Application.targetFrameRate = 60;
+
 		// Find mediated objects
 		player = FindObjectOfType<Player>();
 	}

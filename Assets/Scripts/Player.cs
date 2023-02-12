@@ -13,7 +13,7 @@ public class Player : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D other) {
 		StartCoroutine(flash(0.5f));
-		StartCoroutine(wobble());
+		StartCoroutine(wobble(0.5f));
 		Events.getInstance().playerHit.Invoke();
 	}
 
@@ -24,8 +24,7 @@ public class Player : MonoBehaviour {
 		flashEffect.SetActive(!flashEffect.activeInHierarchy);
 	}
 
-	IEnumerator wobble() {
-		float duration = 0.5f;
+	IEnumerator wobble(float duration) {
 		float speed = 40f;
 		float amount = 0.1f;
 

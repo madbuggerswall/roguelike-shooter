@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour {
-	const float waveBreak = 4f;
+	const float waveBreak = 2f;
 
 	WaveContainer waveContainer;
 	ObjectPool objectPool;
@@ -22,8 +22,8 @@ public class EnemySpawner : MonoBehaviour {
 	IEnumerator spawnWaves(WaveContainer waveContainer) {
 		Queue<Wave> waveQueue = waveContainer.getQueue();
 
-		for (int waveCount = 0; waveCount < waveQueue.Count; waveCount++) {
-			Events.getInstance().waveBegan.Invoke(waveCount++);
+		for (int waveCount = 0; waveQueue.Count > 0; waveCount++) {
+			Events.getInstance().waveBegan.Invoke(waveCount);
 			yield return new WaitForSeconds(waveBreak);
 			yield return spawnEnemies(waveQueue.Dequeue());
 		}
