@@ -12,12 +12,13 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] int health;
 	[SerializeField] int damage;
 
-	[SerializeField] float movementSpeed;
-
 	Rigidbody2D rigidBody;
 	CircleCollider2D circleCollider;
 
-	Vector2 moveDirection;
+	[SerializeField] float movementSpeed;
+	[SerializeField] Vector2 movementDir;
+
+	// TODO EnemyState state
 
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
@@ -28,6 +29,15 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	void OnEnable() {
 		StartCoroutine(chaseAndAttack(2f));
+	}
+
+	void OnCollisionStay2D(Collision2D other) {
+		// if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")) {
+		// 	float distance = Vector2.Distance(other.transform.position, rigidBody.position);
+		// 	float pushStrength = 1f / (1f + distance);
+		// 	Vector2 pushDirection = (other.transform.position - transform.position).normalized;
+		// 	rigidBody.MovePosition(rigidBody.position + pushDirection * Time.fixedDeltaTime);
+		// }
 	}
 
 	// TODO
@@ -64,37 +74,50 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		}
 	}
 
-	void moveAlongDirection(Vector2 direction) {
-		rigidBody.MovePosition(rigidBody.position + direction * movementSpeed * Time.fixedDeltaTime);
+	void moveAlongDirection(Vector2 direction, float speed) {
+		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
-	IEnumerator getMovementDirectionPeriodically(Transform target, float period) {
-		float radius = 1f;
+	void moveTowardsTarget(Transform target) {
+		Vector2 towards = Vector2.MoveTowards(rigidBody.position, target.position, movementSpeed * Time.fixedDeltaTime);
+		rigidBody.MovePosition(towards);
+	}
 
+	IEnumerator calculateDirectionPeriodically(Transform target, float period) {
+		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
+
+		// OverlapCircle boilerplate
+		float radius = 1f;
 		ContactFilter2D contactFilter = new ContactFilter2D();
-		contactFilter.layerMask = LayerMask.GetMask("Enemy");
+		contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
 		Collider2D[] enemiesAround = new Collider2D[9];
 
-		while (true) {
-			moveDirection = ((Vector2) target.position - rigidBody.position).normalized;
+		// TODO radius plugged below is wrong
+		while (!inRadius(rigidBody.position, target.position, radius)) {
+			movementDir = ((Vector2) target.position - rigidBody.position).normalized;
+
+			// Avoid overlap
 			int enemyCount = Physics2D.OverlapCircle(rigidBody.position, radius, contactFilter, enemiesAround);
-
-			for (int i = 0; i < enemyCount; i++) {
-				// Don't repel self
-				if (enemiesAround[i] == circleCollider)
-					continue;
-
-				float distance = Vector2.Distance(enemiesAround[i].transform.position, transform.position);
-				float pushStrength = 1f / (1f + distance);
-				Vector2 pushDirection = (enemiesAround[i].transform.position - transform.position).normalized;
-
-				moveDirection -= moveDirection * pushStrength;
-			}
-
-			moveDirection.Normalize();
+			movementDir = movementDir + getPushDirection(enemiesAround, enemyCount).normalized;
 
 			yield return new WaitForSeconds(period);
 		}
+	}
+
+	Vector2 getPushDirection(Collider2D[] enemiesAround, int enemyCount) {
+		Vector2 pushDirection = Vector2.zero;
+		for (int i = 0; i < enemyCount; i++) {
+			// Don't repel self
+			if (enemiesAround[i] == circleCollider)
+				continue;
+
+			float distance = Vector2.Distance(enemiesAround[i].transform.position, transform.position);
+			float pushStrength = 1f / (1f + distance);
+			Vector2 pushContribution = -(enemiesAround[i].transform.position - transform.position).normalized;
+
+			pushDirection += pushContribution * pushStrength;
+		}
+		return pushDirection;
 	}
 
 	void stride(float movementSpeed) {
@@ -102,7 +125,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		const float freqMul = 4;
 		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * Time.time));
 	}
-
 
 	IEnumerator die(float duration) {
 		Vector2 initialPosition = rigidBody.position;
@@ -150,7 +172,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
 
 		while (!inRadius(rigidBody.position, target.position, radius)) {
-			moveAlongDirection(moveDirection);
+			moveAlongDirection(movementDir, movementSpeed);
 			stride(movementSpeed);
 			yield return new WaitForFixedUpdate();
 		}
@@ -158,10 +180,11 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	IEnumerator chaseAndAttack(float radius) {
 		Transform target = LevelManager.getInstance().getPlayer().transform;
-		StartCoroutine(getMovementDirectionPeriodically(target, 0.5f));
+
 		// While player is alive/not beaten
 		while (true) {
 			// Chase
+			StartCoroutine(calculateDirectionPeriodically(target, 0.1f));
 			yield return moveTowards(target, radius);
 			stride(0);
 
