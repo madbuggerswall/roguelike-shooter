@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO Spawn waves when player kills all the enemies from one before
 public class EnemySpawner : MonoBehaviour {
 	const float waveBreak = 2f;
 

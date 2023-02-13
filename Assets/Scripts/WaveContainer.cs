@@ -28,11 +28,18 @@ public class WaveContainer {
 			(12, EnemyType.jelly),
 			(12, EnemyType.ghost));
 
+		Wave wave4 = new Wave(1f);
+		wave4.setEnemies(
+			(4, EnemyType.jelly),
+			(4, EnemyType.brute),
+			(4, EnemyType.ghost));
+
 
 		queue = new Queue<Wave>();
 		queue.Enqueue(wave1);
 		queue.Enqueue(wave2);
 		queue.Enqueue(wave3);
+		queue.Enqueue(wave4);
 	}
 
 	public Queue<Wave> getQueue() { return queue; }

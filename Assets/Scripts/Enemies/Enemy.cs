@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Events;
 
 // Basic, Fast, Tank, Ranged, Boss
+// TODO: Jelly, Ghost, Brute, Wizard behaviors
+// MAYBE: Enemy states
+
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] GameObject flashEffect;
@@ -11,6 +14,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	[SerializeField] int health;
 	[SerializeField] int damage;
+	[SerializeField] float attackRadius;
 
 	[SerializeField] float movementSpeed;
 	[SerializeField] Vector2 movementDir;
@@ -18,13 +22,12 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	Rigidbody2D rigidBody;
 	CircleCollider2D circleCollider;
 
-	// TODO EnemyState state
-
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
 
 		rigidBody.isKinematic = true;
+		rigidBody.useFullKinematicContacts = true;
 	}
 
 	void OnEnable() {
