@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Events;
 
 class Events {
@@ -8,7 +9,8 @@ class Events {
 
 	public UnityEvent projectileThrown;
 
-	public UnityEvent enemyHit;
+	public UnityEvent<Collision2D> enemyHit;
+	public UnityEvent<EnemyType> enemyBeaten;
 
 	public UnityEvent<int> waveBegan;
 
@@ -18,7 +20,8 @@ class Events {
 
 		projectileThrown = new UnityEvent();
 
-		enemyHit = new UnityEvent();
+		enemyHit = new UnityEvent<Collision2D>();
+		enemyBeaten = new UnityEvent<EnemyType>();
 
 		waveBegan = new UnityEvent<int>();
 	}

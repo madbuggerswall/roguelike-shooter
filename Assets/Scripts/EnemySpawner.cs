@@ -22,7 +22,7 @@ public class EnemySpawner : MonoBehaviour {
 	IEnumerator spawnWaves(WaveContainer waveContainer) {
 		Queue<Wave> waveQueue = waveContainer.getQueue();
 
-		for (int waveCount = 0; waveQueue.Count > 0; waveCount++) {
+		for (int waveCount = 1; waveQueue.Count > 0; waveCount++) {
 			Events.getInstance().waveBegan.Invoke(waveCount);
 			yield return new WaitForSeconds(waveBreak);
 			yield return spawnEnemies(waveQueue.Dequeue());

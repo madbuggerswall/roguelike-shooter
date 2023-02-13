@@ -46,7 +46,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		StartCoroutine(flash(0.5f));
 		StartCoroutine(wobble(0.5f));
 		StartCoroutine(knockback(0.5f));
-		Events.getInstance().enemyHit.Invoke();
 		// updateHealthBar();
 
 		if (health <= 0) {
@@ -54,6 +53,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 			stride(0);
 			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
+			Events.getInstance().enemyBeaten.Invoke(getEnemyType());
 		}
 	}
 
@@ -154,7 +154,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 		for (float elapsedTime = 0; elapsedTime <= duration; elapsedTime += Time.fixedDeltaTime) {
 
-			float t = Tween.easeOutSine(elapsedTime,duration);
+			float t = Tween.easeOutSine(elapsedTime, duration);
 			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, t);
 			rigidBody.MovePosition(position);
 			yield return new WaitForFixedUpdate();
@@ -216,4 +216,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 		transform.localScale = initialScale;
 	}
+
+	protected abstract EnemyType getEnemyType();
 }
