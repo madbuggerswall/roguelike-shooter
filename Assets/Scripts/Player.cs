@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Health and attack properties
+// TODO Invulnerability frames
 public class Player : MonoBehaviour {
 
 	// Migrate te JuiceEffects

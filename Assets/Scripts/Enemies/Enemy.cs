@@ -12,11 +12,11 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] int health;
 	[SerializeField] int damage;
 
-	Rigidbody2D rigidBody;
-	CircleCollider2D circleCollider;
-
 	[SerializeField] float movementSpeed;
 	[SerializeField] Vector2 movementDir;
+
+	Rigidbody2D rigidBody;
+	CircleCollider2D circleCollider;
 
 	// TODO EnemyState state
 
@@ -29,15 +29,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	void OnEnable() {
 		StartCoroutine(chaseAndAttack(2f));
-	}
-
-	void OnCollisionStay2D(Collision2D other) {
-		// if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")) {
-		// 	float distance = Vector2.Distance(other.transform.position, rigidBody.position);
-		// 	float pushStrength = 1f / (1f + distance);
-		// 	Vector2 pushDirection = (other.transform.position - transform.position).normalized;
-		// 	rigidBody.MovePosition(rigidBody.position + pushDirection * Time.fixedDeltaTime);
-		// }
 	}
 
 	// TODO
@@ -152,18 +143,20 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		circleCollider.enabled = true;
 	}
 
-	IEnumerator dash(Transform target) {
-		float speed = 8;
-		float drag = 8;
+	IEnumerator dash(Transform target, float duration) {
 		float distance = 4;
+		float speed = distance / duration;
+		float drag = speed;
 
 		Vector2 direction = ((Vector2) target.position - rigidBody.position).normalized;
+		Vector2 initialPosition = rigidBody.position;
 		Vector2 targetPosition = rigidBody.position + direction * distance;
 
-		while (rigidBody.position != targetPosition) {
-			Vector3 towards = Vector3.MoveTowards(rigidBody.position, targetPosition, speed * Time.fixedDeltaTime);
-			rigidBody.MovePosition(towards);
-			speed = Mathf.Clamp(speed - drag * Time.deltaTime, 1f, 8f);
+		for (float elapsedTime = 0; elapsedTime <= duration; elapsedTime += Time.fixedDeltaTime) {
+
+			float t = Tween.easeOutSine(elapsedTime,duration);
+			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, t);
+			rigidBody.MovePosition(position);
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -194,7 +187,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 			yield return new WaitForSeconds(0.5f);
 
 			// Attack
-			yield return dash(target);
+			yield return dash(target, 0.5f);
 			yield return new WaitForSeconds(0.5f);
 		}
 	}

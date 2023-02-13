@@ -2,56 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// IPoolable
 public class Projectile : MonoBehaviour {
-	const float maxDelta = 8f;
 
-	int damage = 10;
-	Enemy target;
+	[SerializeField] int damage = 10;
+	[SerializeField] float speed = 8f;
+	[SerializeField] Vector2 direction;
 
 	[SerializeField] float offsetAngle;
 
+	Rigidbody2D rigidBody;
+
 	void Awake() {
-		target = FindObjectOfType<Enemy>();
+		rigidBody = GetComponent<Rigidbody2D>();
 	}
 
-	void Update() {
-		checkTarget(target);
-		hitTarget(target);
-		moveTowardsTarget(target.transform.position);
-	}
-
-	// Check if target is still active, if not projectile is disabled
-	void checkTarget(Enemy target) {
-		if (!target.gameObject.activeInHierarchy)
-			gameObject.SetActive(false);
-	}
-
-	// Deal damage to target if projectile is at target position
-	void hitTarget(Enemy target) {
-		if (transform.position == target.transform.position) {
-			target.takeDamage(damage);
+	void OnCollisionEnter2D(Collision2D other) {
+		if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")) {
+			other.gameObject.GetComponent<Enemy>().takeDamage(damage);
 			gameObject.SetActive(false);
 		}
 	}
 
-	// Transform based movement
-	void moveTowardsTarget(Vector3 targetPosition) {
-		Vector3 towardsPosition = Vector3.MoveTowards(transform.position, targetPosition, maxDelta * Time.deltaTime);
-		transform.position = towardsPosition;
-
-		lookAtTarget(targetPosition);
+	void FixedUpdate() {
+		moveAlongDirection(direction);
+		lookAtDirection(direction);
 	}
 
-		// Atan solution
-	void lookAtTarget(Vector3 targetPosition) {
-		Vector3 dir = targetPosition - transform.position;
-		float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + offsetAngle;
+	// Transform based movement
+	void moveAlongDirection(Vector2 direction) {
+		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
+	}
+
+	// Atan solution
+	void lookAtDirection(Vector2 direction) {
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + offsetAngle;
 		transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 	}
 
-	public void throwAtTarget(Enemy target, int damage) {
-		this.target = target;
+	public void throwAtTarget(Transform target, int damage) {
 		this.damage = damage;
+		this.direction = (target.transform.position - transform.position).normalized;
 	}
 
 	// Getters
