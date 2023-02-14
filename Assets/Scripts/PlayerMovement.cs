@@ -23,8 +23,25 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
+		movementDir.Normalize();
+		movementDir = checkForWallsAlongDirection(movementDir);
 		rigidBody.MovePosition(rigidBody.position + movementDir * movementSpeed * Time.fixedDeltaTime);
 		stride();
+	}
+
+	Vector2 checkForWallsAlongDirection(Vector2 direction) {
+		Vector2 verticalPosition = rigidBody.position + Vector2.up * Mathf.Sign(direction.y);
+		Vector2 horizontalPosition = rigidBody.position + Vector2.right * Mathf.Sign(direction.x);
+
+		Collider2D vertical = Physics2D.OverlapPoint(verticalPosition, Layers.wallMask);
+		Collider2D horizontal = Physics2D.OverlapPoint(horizontalPosition, Layers.wallMask);
+
+		if (vertical is not null)
+			direction.y = 0;
+		if (horizontal is not null)
+			direction.x = 0;
+
+		return direction;
 	}
 
 	// Strut, walk animation

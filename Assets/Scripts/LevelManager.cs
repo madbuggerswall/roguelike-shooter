@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO Make the projectiles rigidbodies and move linear.
-
 // Mediator
 public class LevelManager : MonoBehaviour {
 	static LevelManager instance;
@@ -16,8 +14,12 @@ public class LevelManager : MonoBehaviour {
 		// GameManager
 		Application.targetFrameRate = 60;
 
+		// Initialize Layers for easy access
+		Layers.initialize();
+		
 		// Find mediated objects
 		player = FindObjectOfType<Player>();
+
 	}
 
 	public Player getPlayer() { return player; }

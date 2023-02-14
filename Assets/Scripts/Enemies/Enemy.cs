@@ -7,6 +7,9 @@ using UnityEngine.Events;
 // TODO: Jelly, Ghost, Brute, Wizard behaviors
 // MAYBE: Enemy states
 
+// Jellies dash
+// Ghosts don't
+
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] GameObject flashEffect;
@@ -60,42 +63,40 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		}
 	}
 
-	IEnumerator knockback(float duration) {
-		Vector2 initialPosition = rigidBody.position;
-		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
-			yield return new WaitForFixedUpdate();
-		}
+	Vector2 checkForWallsAlongDirection(Vector2 direction) {
+		Vector2 verticalPosition = rigidBody.position + Vector2.up * Mathf.Sign(direction.y);
+		Vector2 horizontalPosition = rigidBody.position + Vector2.right * Mathf.Sign(direction.x);
+
+		Collider2D vertical = Physics2D.OverlapPoint(verticalPosition, Layers.wallMask);
+		Collider2D horizontal = Physics2D.OverlapPoint(horizontalPosition, Layers.wallMask);
+
+		if (vertical is not null)
+			direction.y = 0;
+		if (horizontal is not null)
+			direction.x = 0;
+
+		return direction;
 	}
 
+	// Use this for a collision aware movement
 	void moveAlongDirection(Vector2 direction, float speed) {
+		direction = checkForWallsAlongDirection(direction);
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
-	void moveTowardsTarget(Transform target) {
-		Vector2 towards = Vector2.MoveTowards(rigidBody.position, target.position, movementSpeed * Time.fixedDeltaTime);
-		rigidBody.MovePosition(towards);
+	// Use this for a collision aware movement
+	void moveToPosition(Vector2 position) {
+		Vector2 direction = position - rigidBody.position;
+		direction = checkForWallsAlongDirection(direction);
+		rigidBody.MovePosition(rigidBody.position + direction);
 	}
 
-	IEnumerator calculateDirectionPeriodically(Transform target, float period) {
-		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
+	void stride(float movementSpeed) {
+		const float angleRange = 16;
+		const float freqMul = 4;
 
-		// OverlapCircle boilerplate
-		float radius = 1f;
-		ContactFilter2D contactFilter = new ContactFilter2D();
-		contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
-		Collider2D[] enemiesAround = new Collider2D[9];
-
-		// TODO radius plugged below is wrong
-		while (!inRadius(rigidBody.position, target.position, radius)) {
-			movementDir = ((Vector2) target.position - rigidBody.position).normalized;
-
-			// Avoid overlap
-			int enemyCount = Physics2D.OverlapCircle(rigidBody.position, radius, contactFilter, enemiesAround);
-			movementDir = movementDir + getPushDirection(enemiesAround, enemyCount).normalized;
-
-			yield return new WaitForSeconds(period);
-		}
+		float movement = Mathf.Clamp01(Mathf.Abs(movementDir.x) + Mathf.Abs(movementDir.y));
+		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * movement * Time.time));
 	}
 
 	Vector2 getPushDirection(Collider2D[] enemiesAround, int enemyCount) {
@@ -114,10 +115,92 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		return pushDirection;
 	}
 
-	void stride(float movementSpeed) {
-		const float angleRange = 16;
-		const float freqMul = 4;
-		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * Time.time));
+	IEnumerator calculateDirectionPeriodically(Transform target, float period) {
+		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
+
+		// OverlapCircle boilerplate
+		float radius = 1f;
+		ContactFilter2D contactFilter = new ContactFilter2D();
+		contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
+		Collider2D[] enemiesAround = new Collider2D[9];
+
+		while (!inRadius(rigidBody.position, target.position, attackRadius)) {
+			movementDir = ((Vector2) target.position - rigidBody.position).normalized;
+
+			// Avoid overlap
+			int enemyCount = Physics2D.OverlapCircle(rigidBody.position, radius, contactFilter, enemiesAround);
+			movementDir = movementDir + getPushDirection(enemiesAround, enemyCount).normalized;
+
+			yield return new WaitForSeconds(period);
+		}
+	}
+
+	IEnumerator moveTowards(Transform target) {
+		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
+
+		while (!inRadius(rigidBody.position, target.position, attackRadius)) {
+			moveAlongDirection(movementDir, movementSpeed);
+			stride(movementSpeed);
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
+	IEnumerator chaseAndAttack(float radius) {
+		Transform target = LevelManager.getInstance().getPlayer().transform;
+
+		// While player is alive/not beaten
+		while (true) {
+			// Chase
+			StartCoroutine(calculateDirectionPeriodically(target, 0.1f));
+			yield return moveTowards(target);
+			stride(0);
+
+			// Notice
+			Events.getInstance().playerNoticed.Invoke();
+			yield return notice(0.5f);
+			yield return new WaitForSeconds(0.5f);
+
+			// // Attack
+			// yield return melee(target, 0.5f, 1f);
+			yield return dash(target, 0.5f);
+			yield return new WaitForSeconds(0.5f);
+		}
+	}
+
+	IEnumerator dash(Transform target, float duration) {
+		float distance = 4;
+		float speed = distance / duration;
+		float drag = speed;
+
+		Vector2 direction = ((Vector2) target.position - rigidBody.position).normalized;
+		Vector2 initialPosition = rigidBody.position;
+		Vector2 targetPosition = rigidBody.position + direction * distance;
+
+		for (float elapsedTime = 0; elapsedTime <= duration; elapsedTime += Time.fixedDeltaTime) {
+			float t = Tween.easeOutSine(elapsedTime, duration);
+			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, t);
+			moveToPosition(position);
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
+	IEnumerator melee(Transform target, float duration, float length) {
+		Vector2 initialPosition = rigidBody.position;
+		Vector2 direction = (target.position - transform.position).normalized;
+
+		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + direction * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
+	// Reactions
+	IEnumerator knockback(float duration) {
+		Vector2 initialPosition = rigidBody.position;
+		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+			yield return new WaitForFixedUpdate();
+		}
 	}
 
 	IEnumerator die(float duration) {
@@ -133,68 +216,20 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 	IEnumerator notice(float duration) {
+		float jumpHeight = 0.5f;
+
 		exclamation.SetActive(true);
 		circleCollider.enabled = false;
 
 		Vector2 initialPosition = rigidBody.position;
 		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+			rigidBody.MovePosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI / duration * elapsedTime));
 			yield return new WaitForFixedUpdate();
 		}
 
 		exclamation.SetActive(false);
 		circleCollider.enabled = true;
 	}
-
-	IEnumerator dash(Transform target, float duration) {
-		float distance = 4;
-		float speed = distance / duration;
-		float drag = speed;
-
-		Vector2 direction = ((Vector2) target.position - rigidBody.position).normalized;
-		Vector2 initialPosition = rigidBody.position;
-		Vector2 targetPosition = rigidBody.position + direction * distance;
-
-		for (float elapsedTime = 0; elapsedTime <= duration; elapsedTime += Time.fixedDeltaTime) {
-
-			float t = Tween.easeOutSine(elapsedTime, duration);
-			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, t);
-			rigidBody.MovePosition(position);
-			yield return new WaitForFixedUpdate();
-		}
-	}
-
-	IEnumerator moveTowards(Transform target, float radius) {
-		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
-
-		while (!inRadius(rigidBody.position, target.position, radius)) {
-			moveAlongDirection(movementDir, movementSpeed);
-			stride(movementSpeed);
-			yield return new WaitForFixedUpdate();
-		}
-	}
-
-	IEnumerator chaseAndAttack(float radius) {
-		Transform target = LevelManager.getInstance().getPlayer().transform;
-
-		// While player is alive/not beaten
-		while (true) {
-			// Chase
-			StartCoroutine(calculateDirectionPeriodically(target, 0.1f));
-			yield return moveTowards(target, radius);
-			stride(0);
-
-			// Notice
-			Events.getInstance().playerNoticed.Invoke();
-			yield return notice(0.5f);
-			yield return new WaitForSeconds(0.5f);
-
-			// Attack
-			yield return dash(target, 0.5f);
-			yield return new WaitForSeconds(0.5f);
-		}
-	}
-
 
 	// Juice effects
 	IEnumerator flash(float duration) {
@@ -220,5 +255,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		transform.localScale = initialScale;
 	}
 
+	// Abstract
 	protected abstract EnemyType getEnemyType();
 }

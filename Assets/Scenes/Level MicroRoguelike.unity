@@ -1657,7 +1657,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &438808117
 Transform:
   m_ObjectHideFlags: 0
@@ -7228,7 +7228,7 @@ MonoBehaviour:
   exclamation: {fileID: 665087271}
   health: 100
   damage: 8
-  attackRadius: 0
+  attackRadius: 2
   movementSpeed: 2
   movementDir: {x: 0, y: 0}
 --- !u!1 &1175911314
@@ -8431,7 +8431,7 @@ GameObject:
   - component: {fileID: 1408706253}
   - component: {fileID: 1408706252}
   - component: {fileID: 1408706251}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9842,7 +9842,7 @@ CompositeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
+  m_GeometryType: 1
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
@@ -9962,7 +9962,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 1408706247}
   m_BodyType: 2
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
@@ -20591,7 +20591,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2109091731
 Transform:
   m_ObjectHideFlags: 0
@@ -22641,7 +22641,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1563935802946301456
 Transform:
   m_ObjectHideFlags: 0
@@ -22912,7 +22912,7 @@ MonoBehaviour:
   exclamation: {fileID: 1998742857}
   health: 64
   damage: 4
-  attackRadius: 0
+  attackRadius: 1
   movementSpeed: 4
   movementDir: {x: 0, y: 0}
 --- !u!58 &1563935803024505508

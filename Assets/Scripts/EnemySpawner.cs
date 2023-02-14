@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // TODO Spawn waves when player kills all the enemies from one before
+// TODO Spawn points
 public class EnemySpawner : MonoBehaviour {
 	const float waveBreak = 2f;
 
 	WaveContainer waveContainer;
 	ObjectPool objectPool;
+
+	int enemiesSpawned;
 
 	void Awake() {
 		waveContainer = new WaveContainer();
@@ -16,7 +19,21 @@ public class EnemySpawner : MonoBehaviour {
 
 	void Start() {
 		// Events.getInstance().gameOver.AddListener(delegate { StopAllCoroutines(); });
-		StartCoroutine(spawnWaves(waveContainer));
+		// StartCoroutine(spawnWaves(waveContainer));
+
+		spawnNextWave();
+		Events.getInstance().enemyBeaten.AddListener(delegate {
+			enemiesSpawned--;
+			if (enemiesSpawned == 0)
+				spawnNextWave();
+		});
+	}
+
+	void spawnNextWave() {
+		// Events.getInstance().waveBegan.Invoke(waveCount);
+		Wave currentWave = waveContainer.getQueue().Dequeue();
+		enemiesSpawned = currentWave.getEnemyQueue().Count;
+		StartCoroutine(spawnEnemies(currentWave));
 	}
 
 	// Spawn waves periodically every waveBreak seconds
