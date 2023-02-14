@@ -15,6 +15,7 @@ public class CameraImpulse : MonoBehaviour {
 
 	void Start() {
 		Events.getInstance().enemyHit.AddListener(cameraImpulse);
+		Events.getInstance().playerHit.AddListener(cameraImpulse);
 	}
 
 

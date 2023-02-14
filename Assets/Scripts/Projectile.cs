@@ -21,7 +21,6 @@ public class Projectile : MonoBehaviour {
 		if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")) {
 			other.gameObject.GetComponent<Enemy>().takeDamage(damage);
 			gameObject.SetActive(false);
-			
 			Events.getInstance().enemyHit.Invoke(other);
 		}
 	}

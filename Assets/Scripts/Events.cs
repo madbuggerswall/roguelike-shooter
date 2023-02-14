@@ -4,7 +4,7 @@ using UnityEngine.Events;
 class Events {
 	static Events instance;
 
-	public UnityEvent playerHit;
+	public UnityEvent<Collision2D> playerHit;
 	public UnityEvent playerNoticed;
 
 	public UnityEvent projectileThrown;
@@ -15,7 +15,7 @@ class Events {
 	public UnityEvent<int> waveBegan;
 
 	Events() {
-		playerHit = new UnityEvent();
+		playerHit = new UnityEvent<Collision2D>();
 		playerNoticed = new UnityEvent();
 
 		projectileThrown = new UnityEvent();

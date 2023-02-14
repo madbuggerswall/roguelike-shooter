@@ -13,9 +13,9 @@ public class WaveContainer {
 	void initializeWaves() {
 		Wave wave1 = new Wave(1f);
 		wave1.setEnemies(
-			// EnemyType.jelly,
-			// EnemyType.jelly,
-			// EnemyType.jelly,
+			EnemyType.jelly,
+			EnemyType.jelly,
+			EnemyType.jelly,
 			EnemyType.jelly);
 
 		Wave wave2 = new Wave(1f);

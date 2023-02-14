@@ -4,10 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 
 // Health and attack properties
-// TODO Invulnerability frames
-// TODO Players and enemies move through walls Fix it 
-// TODO Player should have a knockback
-// TODO For Flash and exclamation effects, enable/disable the renderers instead of gameobjects.
 
 public class Player : MonoBehaviour {
 
@@ -35,7 +31,7 @@ public class Player : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D other) {
 		if (other.gameObject.layer == Layers.enemy) {
 			StartCoroutine(takeDamage(other, 0.5f));
-			Events.getInstance().playerHit.Invoke();
+			Events.getInstance().playerHit.Invoke(other);
 		}
 	}
 

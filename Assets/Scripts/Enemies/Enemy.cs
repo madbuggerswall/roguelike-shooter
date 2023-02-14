@@ -34,7 +34,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 	void OnEnable() {
-		StartCoroutine(chaseAndAttack(2f));
+		StartCoroutine(chaseAndAttack());
 	}
 
 	// TODO
@@ -44,14 +44,14 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	void IPoolable.returnToPool() { }
 
 	// TODO This deforms the enemy and causes weird behavior when player attack period is low.
+	// Current damage behavior should caused by axe, because it stuns the enemy (knockback)
 	public void takeDamage(int damage) {
 		if (health <= 0)
 			return;
 
 		health -= damage;
-		StartCoroutine(flash(0.5f));
-		StartCoroutine(wobble(0.5f));
-		StartCoroutine(knockback(0.5f));
+		StopAllCoroutines();
+		StartCoroutine(damageEffects(0.5f));
 		// updateHealthBar();
 
 		if (health <= 0) {
@@ -63,6 +63,16 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		}
 	}
 
+	IEnumerator damageEffects(float duration) {
+		StartCoroutine(flash(0.5f));
+		StartCoroutine(wobble(0.5f));
+		StartCoroutine(knockback(0.5f));
+		yield return new WaitForSeconds(duration);
+		StartCoroutine(chaseAndAttack());
+	}
+
+
+	// Movement utilities
 	Vector2 checkForWallsAlongDirection(Vector2 direction) {
 		Vector2 verticalPosition = rigidBody.position + Vector2.up * Mathf.Sign(direction.y);
 		Vector2 horizontalPosition = rigidBody.position + Vector2.right * Mathf.Sign(direction.x);
@@ -78,13 +88,11 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		return direction;
 	}
 
-	// Use this for a collision aware movement
 	void moveAlongDirection(Vector2 direction, float speed) {
 		direction = checkForWallsAlongDirection(direction);
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
-	// Use this for a collision aware movement
 	void moveToPosition(Vector2 position) {
 		Vector2 direction = position - rigidBody.position;
 		direction = checkForWallsAlongDirection(direction);
@@ -145,7 +153,8 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		}
 	}
 
-	IEnumerator chaseAndAttack(float radius) {
+	// Behavior/Strategy
+	IEnumerator chaseAndAttack() {
 		Transform target = LevelManager.getInstance().getPlayer().transform;
 
 		// While player is alive/not beaten
@@ -167,6 +176,8 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		}
 	}
 
+
+	// Attack
 	IEnumerator dash(Transform target, float duration) {
 		float distance = 4;
 		float speed = distance / duration;
@@ -248,7 +259,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 			transform.localScale = initialScale + Vector2.one * scale;
 			yield return new WaitForFixedUpdate();
 		}
-		
+
 		transform.localScale = initialScale;
 	}
 
