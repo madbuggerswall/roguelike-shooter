@@ -12,8 +12,8 @@ using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public abstract class Enemy : MonoBehaviour, IPoolable {
-	[SerializeField] GameObject flashEffect;
-	[SerializeField] GameObject exclamation;
+	[SerializeField] SpriteRenderer flashEffect;
+	[SerializeField] SpriteRenderer exclamation;
 
 	[SerializeField] int health;
 	[SerializeField] int damage;
@@ -157,12 +157,12 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 			// Notice
 			Events.getInstance().playerNoticed.Invoke();
-			yield return notice(0.5f);
-			yield return new WaitForSeconds(0.5f);
+			yield return notice(0.2f);
+			// yield return new WaitForSeconds(0.5f);
 
 			// // Attack
 			// yield return melee(target, 0.5f, 1f);
-			yield return dash(target, 0.5f);
+			yield return melee(target, 0.5f);
 			yield return new WaitForSeconds(0.5f);
 		}
 	}
@@ -176,20 +176,19 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		Vector2 initialPosition = rigidBody.position;
 		Vector2 targetPosition = rigidBody.position + direction * distance;
 
-		for (float elapsedTime = 0; elapsedTime <= duration; elapsedTime += Time.fixedDeltaTime) {
-			float t = Tween.easeOutSine(elapsedTime, duration);
-			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, t);
+		for (float time = 0; time <= duration; time += Time.fixedDeltaTime) {
+			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, Tween.easeOutSine(time, duration));
 			moveToPosition(position);
 			yield return new WaitForFixedUpdate();
 		}
 	}
 
-	IEnumerator melee(Transform target, float duration, float length) {
+	IEnumerator melee(Transform target, float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		Vector2 direction = (target.position - transform.position).normalized;
 
-		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + direction * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + direction * Mathf.Sin(Mathf.PI * Tween.easeOutQuad(time, duration)));
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -197,17 +196,17 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	// Reactions
 	IEnumerator knockback(float duration) {
 		Vector2 initialPosition = rigidBody.position;
-		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * time));
 			yield return new WaitForFixedUpdate();
 		}
 	}
 
 	IEnumerator die(float duration) {
 		Vector2 initialPosition = rigidBody.position;
-		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * elapsedTime));
-			rigidBody.MoveRotation(elapsedTime / duration * 90);
+		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * time));
+			rigidBody.MoveRotation(time / duration * 90);
 			yield return new WaitForFixedUpdate();
 		}
 
@@ -216,42 +215,40 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 	IEnumerator notice(float duration) {
-		float jumpHeight = 0.5f;
+		float jumpHeight = duration;
 
-		exclamation.SetActive(true);
+		exclamation.enabled = true;
 		circleCollider.enabled = false;
 
 		Vector2 initialPosition = rigidBody.position;
-		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI / duration * elapsedTime));
+		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI / duration * time));
 			yield return new WaitForFixedUpdate();
 		}
 
-		exclamation.SetActive(false);
+		exclamation.enabled = false;
 		circleCollider.enabled = true;
 	}
 
 	// Juice effects
 	IEnumerator flash(float duration) {
-		flashEffect.SetActive(!flashEffect.activeInHierarchy);
+		flashEffect.enabled = !flashEffect.enabled;
 		yield return new WaitForSeconds(duration);
-		flashEffect.SetActive(!flashEffect.activeInHierarchy);
+		flashEffect.enabled = !flashEffect.enabled;
 	}
 
 	IEnumerator wobble(float duration) {
-		float speed = 40f;
+		float frequency = 20f;
 		float amount = 0.1f;
 
-		float elapsedTime = 0f;
 		Vector2 initialScale = transform.localScale;
 
-		while (elapsedTime < duration) {
-			float scale = Mathf.Sin(elapsedTime * speed) * amount;
+		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
+			float scale = Mathf.Sin(Mathf.PI * frequency * time / duration) * amount;
 			transform.localScale = initialScale + Vector2.one * scale;
-			elapsedTime += Time.deltaTime;
-			yield return null;
+			yield return new WaitForFixedUpdate();
 		}
-
+		
 		transform.localScale = initialScale;
 	}
 
