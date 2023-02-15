@@ -8,12 +8,20 @@ public class Prefabs : MonoBehaviour {
 
 	[Header("Enemies")]
 	[SerializeField] Jelly jelly;
-	[SerializeField] Ghost ghost;
 	[SerializeField] Brute brute;
+	[SerializeField] Ghost ghost;
 	[SerializeField] Wizard wizard;
 
+	[Header("Weapons")]
+	[SerializeField] Sword sword;
+	[SerializeField] Axe axe;
+	[SerializeField] Bow bow;
+
 	[Header("Projectiles")]
-	[SerializeField] Projectile sword;
+	[SerializeField] SwordProjectile swordProjectile;
+	[SerializeField] AxeProjectile axeProjectile;
+	[SerializeField] Arrow arrow;
+
 
 
 	void Awake() {
@@ -23,6 +31,15 @@ public class Prefabs : MonoBehaviour {
 		ghost = GetComponentInChildren<Ghost>(true);
 		brute = GetComponentInChildren<Brute>(true);
 		wizard = GetComponentInChildren<Wizard>(true);
+
+		sword = GetComponentInChildren<Sword>(true);
+		axe = GetComponentInChildren<Axe>(true);
+		bow = GetComponentInChildren<Bow>(true);
+
+		swordProjectile = GetComponentInChildren<SwordProjectile>(true);
+		axeProjectile = GetComponentInChildren<AxeProjectile>(true);
+		arrow = GetComponentInChildren<Arrow>(true);
+
 	}
 
 	public Enemy getEnemy(EnemyType enemyType) {
@@ -31,8 +48,18 @@ public class Prefabs : MonoBehaviour {
 			case EnemyType.ghost: return ghost;
 			case EnemyType.brute: return brute;
 			case EnemyType.wizard: return wizard;
-			
+
 			default: return jelly;
+		}
+	}
+
+	public Projectile getProjectile(ProjectileType projectileType) {
+		switch (projectileType) {
+			case ProjectileType.sword: return swordProjectile;
+			case ProjectileType.axe: return axeProjectile;
+			case ProjectileType.arrow: return arrow;
+
+			default: return swordProjectile;
 		}
 	}
 

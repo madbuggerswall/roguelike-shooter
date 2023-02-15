@@ -3,59 +3,57 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerShooter : MonoBehaviour {
-	[SerializeField] Projectile projectilePrefab;
-	[SerializeField] float attackPeriod;
-	[SerializeField] int projectileDamage;
-
 	bool isEngaging = false;
 	Transform target;
 
+	[SerializeField] Weapon weapon;
+
 	void Start() {
-		StartCoroutine(checkRadiusPeriodically(6, 0.5f));
+		StartCoroutine(checkRadiusPeriodically(6, 0.2f));
+	}
+
+	void OnCollisionEnter2D(Collision2D other) {
+		if (other.gameObject.layer == Layers.weapon) {
+			Weapon weapon = other.gameObject.GetComponent<Weapon>();
+			this.weapon = weapon;
+			weapon.equip(transform);
+		}
 	}
 
 	// Check radius for enemies, sort them by their path progress, make the first one the target
+	// TODO Faulty behavior
 	IEnumerator checkRadiusPeriodically(float radius, float period) {
-		// OverlapCircle boilerplate
 		ContactFilter2D contactFilter = new ContactFilter2D();
-		contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
+		contactFilter.SetLayerMask(Layers.enemyMask);
 		Collider2D[] enemiesAround = new Collider2D[8];
 
 		while (true) {
 			yield return new WaitForSeconds(period);
 
-			// Get enemy colliders in range
 			int enemyCount = Physics2D.OverlapCircle(transform.position, radius, contactFilter, enemiesAround);
-			
-			if (enemyCount == 0)
+			if (enemyCount == 0) {
 				target = null;
-
-			float closestDistanceSqr = Mathf.Infinity;
-			for (int i = 0; i < enemyCount; i++) {
-				float distanceSqr = Vector2.Dot(transform.position, enemiesAround[i].transform.position);
-				if (distanceSqr < closestDistanceSqr) {
-					closestDistanceSqr = distanceSqr;
-					target = enemiesAround[i].transform;
-				}
+				continue;
 			}
 
-			// Start firing if it isn't already
-			if (!isEngaging)
-				StartCoroutine(attackPeriodically(attackPeriod));
+			target = getClosestEnemy(enemiesAround, enemyCount);
+
+			if (!isEngaging && weapon is not null)
+				StartCoroutine(attackPeriodically(weapon.getAttackPeriod()));
 		}
 	}
 
-	// Attack function could hold sound and particle FX and other behavior
-	void attack(Transform target) {
-		throwProjectile(target);
-	}
-
-	// Spawn and throw a projectile, setting its target and damage value
-	void throwProjectile(Transform target) {
-		ObjectPool objectPool = ProjectileContainer.getInstance().GetComponentInChildren<ObjectPool>();
-		Projectile projectile = objectPool.spawn(projectilePrefab.gameObject, transform.position).GetComponent<Projectile>();
-		projectile.throwAtTarget(target, projectileDamage);
-		Events.getInstance().projectileThrown.Invoke();
+	Transform getClosestEnemy(Collider2D[] enemiesAround, int enemyCount) {
+		float closestDistanceSqr = Mathf.Infinity;
+		Transform closestEnemy = null;
+		for (int i = 0; i < enemyCount; i++) {
+			float distanceSqr = Vector2.Dot(transform.position, enemiesAround[i].transform.position);
+			if (distanceSqr < closestDistanceSqr) {
+				closestDistanceSqr = distanceSqr;
+				closestEnemy = enemiesAround[i].transform;
+			}
+		}
+		return closestEnemy;
 	}
 
 	IEnumerator attackPeriodically(float period) {
@@ -63,7 +61,7 @@ public class PlayerShooter : MonoBehaviour {
 
 		// Attack while target is active, and hero is not being dragged
 		while (target != null && target.gameObject.activeInHierarchy) {
-			attack(target);
+			weapon.attack(target);
 			yield return new WaitForSeconds(period);
 		}
 

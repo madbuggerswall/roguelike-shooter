@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ProjectileType { sword, axe, arrow }
 // IPoolable
-public class Projectile : MonoBehaviour {
-
+public abstract class Projectile : MonoBehaviour {
 	[SerializeField] int damage = 10;
 	[SerializeField] float speed = 8f;
 	[SerializeField] Vector2 direction;
@@ -18,16 +18,23 @@ public class Projectile : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D other) {
-		if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")) {
+		if (other.gameObject.layer == Layers.enemy) {
 			other.gameObject.GetComponent<Enemy>().takeDamage(damage);
 			gameObject.SetActive(false);
 			Events.getInstance().enemyHit.Invoke(other);
+			LevelManager.getInstance().getParticles().spawnParticles(getProjectileType(), rigidBody.position);
 		}
 	}
 
 	void FixedUpdate() {
 		moveAlongDirection(direction);
 		lookAtDirection(direction);
+	}
+
+	public void throwAtTarget(Transform target, int damage, float speed) {
+		this.direction = (target.transform.position - transform.position).normalized;
+		this.damage = damage;
+		this.speed = speed;
 	}
 
 	// Transform based movement
@@ -41,11 +48,7 @@ public class Projectile : MonoBehaviour {
 		transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 	}
 
-	public void throwAtTarget(Transform target, int damage) {
-		this.damage = damage;
-		this.direction = (target.transform.position - transform.position).normalized;
-	}
-
 	// Getters
+	protected abstract ProjectileType getProjectileType();
 	public int getDamage() { return damage; }
 }

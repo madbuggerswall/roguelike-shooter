@@ -25,6 +25,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public Player getPlayer() { return player; }
+	public Particles getParticles() { return particles; }
 
 	// Singleton
 	public static LevelManager getInstance() { return instance; }
