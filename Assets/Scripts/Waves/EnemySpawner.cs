@@ -7,6 +7,7 @@ namespace Waves {
 		const float waveBreak = 2f;
 
 		WaveContainer waveContainer;
+		SpawnPoints spawnPoints;
 		ObjectPool objectPool;
 
 		int waveCount;
@@ -15,6 +16,7 @@ namespace Waves {
 		void Awake() {
 			waveContainer = new WaveContainer();
 			objectPool = GetComponentInChildren<ObjectPool>();
+			spawnPoints = GetComponentInChildren<SpawnPoints>();
 		}
 
 		void Start() {
@@ -51,10 +53,12 @@ namespace Waves {
 		// Spawn enemies periodically every Wave.period seconds
 		IEnumerator spawnEnemies(Wave wave) {
 			Queue<EnemyType> enemyQueue = wave.getEnemyQueue();
+			Vector2[] spawnPositions = spawnPoints.getPositions();
 
 			while (enemyQueue.Count > 0) {
 				Enemy enemyPrefab = Prefabs.getInstance().getEnemy(enemyQueue.Dequeue());
-				objectPool.spawn(enemyPrefab.gameObject, transform.position);
+				Vector2 spawnPosition = spawnPositions[enemyQueue.Count % spawnPositions.Length];
+				objectPool.spawn(enemyPrefab.gameObject, spawnPosition);
 				yield return new WaitForSeconds(wave.getPeriod());
 			}
 		}
