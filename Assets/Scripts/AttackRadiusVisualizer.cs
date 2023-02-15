@@ -27,6 +27,4 @@ public class AttackRadiusVisualizer : MonoBehaviour {
 			lineRenderer.SetPosition(i, radius * new Vector3(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle), 0));
 		}
 	}
-
-
 }

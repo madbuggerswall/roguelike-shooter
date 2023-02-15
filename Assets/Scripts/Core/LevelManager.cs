@@ -8,6 +8,8 @@ public class LevelManager : MonoBehaviour {
 
 	Player player;
 
+	Particles particles;
+
 	void Awake() {
 		assertSingleton();
 
@@ -16,10 +18,10 @@ public class LevelManager : MonoBehaviour {
 
 		// Initialize Layers for easy access
 		Layers.initialize();
-		
+
 		// Find mediated objects
 		player = FindObjectOfType<Player>();
-
+		particles = FindObjectOfType<Particles>();
 	}
 
 	public Player getPlayer() { return player; }

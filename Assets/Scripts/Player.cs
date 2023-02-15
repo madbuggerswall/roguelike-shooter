@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 // Health and attack properties
-
+// Rename this class to Hero
 public class Player : MonoBehaviour {
 
 	// Migrate te JuiceEffects

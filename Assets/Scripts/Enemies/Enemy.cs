@@ -7,8 +7,13 @@ using UnityEngine.Events;
 // TODO: Jelly, Ghost, Brute, Wizard behaviors
 // MAYBE: Enemy states
 
-// Jellies dash
-// Ghosts don't
+// Jellies melee	speed: medium | damage: medium
+// Ghosts melee 	speed: high | damage: low
+// Brute dash			speed: low | damage: high
+// Wizard shoot		speed: low | damage: medium
+// Boss?
+
+public enum EnemyType { jelly, ghost, brute, wizard }
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public abstract class Enemy : MonoBehaviour, IPoolable {

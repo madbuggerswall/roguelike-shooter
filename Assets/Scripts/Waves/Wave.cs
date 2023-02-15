@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EnemyType { jelly, ghost, brute, wizard }
-
 // This should be a scriptable object.
 public class Wave {
 	float period;
