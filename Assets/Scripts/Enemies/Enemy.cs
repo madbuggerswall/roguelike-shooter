@@ -79,7 +79,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
 			LevelManager.getInstance().getParticles().spawnParticles(getEnemyType(), transform.position);
-			Events.getInstance().enemyBeaten.Invoke(getEnemyType());
+			Events.getInstance().enemyBeaten.Invoke(getEnemyType(), transform.position);
 		}
 	}
 

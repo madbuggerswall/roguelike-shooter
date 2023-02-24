@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// IEquipable, ICollectible, Collectible, Upgrade
-interface IEquipable {
-	void onEquip();
+interface ICollectible {
+	void onCollect();
 }
 
 public class Inventory : MonoBehaviour {
-	Weapon weapon;
 
-	int coins;
+	Weapon weapon;
+	Armor armor;
+
+	List<Upgrade> upgrades;
+
+	[SerializeField] int coins;
 
 	HashSet<Collider2D> attractedItems;
 
@@ -22,30 +25,44 @@ public class Inventory : MonoBehaviour {
 		StartCoroutine(checkItemsAround(4f, 0.2f));
 	}
 
-	void OnCollisionEnter2D(Collision2D other) {
-		Debug.Log("Collision inventory");
-
-		if (other.gameObject.layer == Layers.weapon) {
-			Weapon weapon = other.gameObject.GetComponent<Weapon>();
-			this.weapon = weapon;
-			equip(weapon);
-		}
+	void collect(ICollectible collectible) {
+		if (collectible is Weapon)
+			equip(collectible as Weapon);
+		if (collectible is Armor)
+			equip(collectible as Armor);
+		else if (collectible is Upgrade)
+			throw new System.NotImplementedException();
+		else if (collectible is Valuable)
+			throw new System.NotImplementedException();
+		else if (collectible is Consumable)
+			throw new System.NotImplementedException();
 	}
 
 	void equip(Weapon weapon) {
 		this.weapon = weapon;
 		this.weapon.transform.SetParent(transform);
-		(weapon as IEquipable).onEquip();
+		this.weapon.transform.localPosition = Vector2.zero;
+
+		(weapon as ICollectible).onCollect();
+	}
+
+	void equip(Armor armor) {
+		this.armor = armor;
+		this.armor.transform.SetParent(transform);
+		this.armor.transform.localPosition = Vector2.zero;
+
+		(armor as ICollectible).onCollect();
 	}
 
 	IEnumerator checkItemsAround(float radius, float period) {
 		ContactFilter2D contactFilter = new ContactFilter2D();
-		contactFilter.SetLayerMask(Layers.weaponMask);
+		contactFilter.SetLayerMask(Layers.weaponMask | Layers.collectibleMask);
 
 		List<Collider2D> itemsAround = new List<Collider2D>();
 
 		while (true) {
 			Physics2D.OverlapCircle(transform.position, radius, contactFilter, itemsAround);
+
 			foreach (Collider2D item in itemsAround)
 				if (attractedItems.Add(item))
 					StartCoroutine(attractItem(item));
@@ -56,8 +73,9 @@ public class Inventory : MonoBehaviour {
 	}
 
 	IEnumerator attractItem(Collider2D item) {
-		float attractionMul = 2f;
-		float equipDistanceSqr = 1f;
+		float attractionMul = 4f;
+		float equipDistance = 1f;
+		float equipDistanceSqr = equipDistance * equipDistance;
 		float distanceSqr = Mathf.Infinity;
 
 		while (attractedItems.Contains(item) && distanceSqr > equipDistanceSqr) {
@@ -68,9 +86,10 @@ public class Inventory : MonoBehaviour {
 			yield return new WaitForFixedUpdate();
 		}
 
-		if (distanceSqr < equipDistanceSqr)
-			equip(item.GetComponent<Weapon>());
-			
+		// Collect
+		if (distanceSqr < equipDistanceSqr) {
+			collect(item.GetComponent<ICollectible>());
+		}
 	}
 
 

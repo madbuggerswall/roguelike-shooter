@@ -7,17 +7,13 @@ public class PlayerShooter : MonoBehaviour {
 	Transform target;
 
 	void Start() {
-		StartCoroutine(checkRadiusPeriodically(6, 0.2f));
+		StartCoroutine(checkEnemiesAround(6, 0.2f));
 	}
 
-	IEnumerator checkRadiusPeriodically(float radius, float period) {
+	IEnumerator checkEnemiesAround(float radius, float period) {
 		ContactFilter2D contactFilter = new ContactFilter2D();
 		contactFilter.SetLayerMask(Layers.enemyMask);
 		List<Collider2D> enemiesAround = new List<Collider2D>();
-		SortedList<float, Collider2D> enemiesAroundS = new SortedList<float, Collider2D>(new DuplicateKeyComparer<float>());
-		
-		enemiesAroundS.Add(0, new Collider2D());
-		enemiesAroundS.Add(0, new Collider2D());
 
 		Inventory inventory = GetComponentInChildren<Inventory>();
 
@@ -48,7 +44,6 @@ public class PlayerShooter : MonoBehaviour {
 
 	IEnumerator attackPeriodically(Weapon weapon) {
 		isEngaging = true;
-		Inventory inventory = GetComponentInChildren<Inventory>();
 
 		// Attack while target is active, and hero is not being dragged
 		while (target != null && target.gameObject.activeInHierarchy) {

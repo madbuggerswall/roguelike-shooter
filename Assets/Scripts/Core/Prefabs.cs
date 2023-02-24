@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Prototype/Clone Pattern
+// Distribute prefabs to related classes.
+
 public class Prefabs : MonoBehaviour {
 	static Prefabs instance;
 
@@ -22,24 +24,78 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] AxeProjectile axeProjectile;
 	[SerializeField] Arrow arrow;
 
+	[Header("Armors")]
+	[SerializeField] WoodShield woodShield;
+	[SerializeField] BodyArmor bodyArmor;
+
+	[Header("Collectibles")]
+	[Header("Consumables")]
+	[SerializeField] Beef beef;
+	[SerializeField] Potion potion;
+
+	[Header("Containers")]
+	[SerializeField] Chest chest;
+	[SerializeField] Pot pot;
+	[SerializeField] SmallPot smallPot;
+
+	[Header("Valueables")]
+	[SerializeField] Coin coin;
+	[SerializeField] Ring ring;
+	[SerializeField] Bracelet bracelet;
+
+	[Header("Upgrades")]
+	[SerializeField] DamageUpgrade damageUpgrade;
+	[SerializeField] HealthUpgrade healthUpgrade;
+	[SerializeField] MagnetUpgrade magnetUpgrade;
+	[SerializeField] MovementUpgrade movementUpgrade;
+	[SerializeField] PeriodUpgrade periodUpgrade;
+	[SerializeField] RangeUpgrade rangeUpgrade;
 
 
 	void Awake() {
 		assertSingleton();
 
+		// Enemies
 		jelly = GetComponentInChildren<Jelly>(true);
 		ghost = GetComponentInChildren<Ghost>(true);
 		brute = GetComponentInChildren<Brute>(true);
 		wizard = GetComponentInChildren<Wizard>(true);
 
+		// Weapons
 		sword = GetComponentInChildren<Sword>(true);
 		axe = GetComponentInChildren<Axe>(true);
 		bow = GetComponentInChildren<Bow>(true);
 
+		// Projectiles
 		swordProjectile = GetComponentInChildren<SwordProjectile>(true);
 		axeProjectile = GetComponentInChildren<AxeProjectile>(true);
 		arrow = GetComponentInChildren<Arrow>(true);
 
+		// Armors
+		woodShield = GetComponentInChildren<WoodShield>(true);
+		bodyArmor = GetComponentInChildren<BodyArmor>(true);
+
+		// Consumables
+		beef = GetComponentInChildren<Beef>(true);
+		potion = GetComponentInChildren<Potion>(true);
+
+		// Containers
+		chest = GetComponentInChildren<Chest>(true);
+		pot = GetComponentInChildren<Pot>(true);
+		smallPot = GetComponentInChildren<SmallPot>(true);
+
+		// Valuables
+		coin = GetComponentInChildren<Coin>(true);
+		ring = GetComponentInChildren<Ring>(true);
+		bracelet = GetComponentInChildren<Bracelet>(true);
+
+		// Upgrades
+		damageUpgrade = GetComponentInChildren<DamageUpgrade>(true);
+		healthUpgrade = GetComponentInChildren<HealthUpgrade>(true);
+		magnetUpgrade = GetComponentInChildren<MagnetUpgrade>(true);
+		movementUpgrade = GetComponentInChildren<MovementUpgrade>(true);
+		periodUpgrade = GetComponentInChildren<PeriodUpgrade>(true);
+		rangeUpgrade = GetComponentInChildren<RangeUpgrade>(true);
 	}
 
 	public Enemy getEnemy(EnemyType enemyType) {
@@ -61,6 +117,10 @@ public class Prefabs : MonoBehaviour {
 
 			default: return swordProjectile;
 		}
+	}
+
+	public Valuable getValuable() {
+		return coin;
 	}
 
 	// Singleton

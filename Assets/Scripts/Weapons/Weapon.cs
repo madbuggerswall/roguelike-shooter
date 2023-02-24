@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Weapon : MonoBehaviour, IPoolable, IEquipable {
+public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 	[SerializeField] protected float attackRadius;
 	[SerializeField] protected float attackPeriod;
 	[SerializeField] protected float projectileSpeed;
@@ -11,11 +11,10 @@ public abstract class Weapon : MonoBehaviour, IPoolable, IEquipable {
 	ProjectileType projectileType;
 
 	// There might be a discard function too
-	void IEquipable.onEquip() {
-		transform.localPosition = Vector2.zero;
-		new List<SpriteRenderer>(GetComponentsInChildren<SpriteRenderer>()).ForEach((s) => s.enabled = false);
-		GetComponent<CircleCollider2D>().enabled = false;
-		GetComponentInChildren<ParticleSystem>().gameObject.SetActive(false);
+	void ICollectible.onCollect() {
+		// Equip sound
+		// Equip particles
+		gameObject.SetActive(false);
 	}
 
 	void IPoolable.reset() { }
