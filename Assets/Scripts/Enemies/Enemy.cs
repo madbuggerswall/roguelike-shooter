@@ -19,13 +19,17 @@ public enum EnemyType { jelly, ghost, brute, wizard }
 public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] SpriteRenderer flashEffect;
 	[SerializeField] SpriteRenderer exclamation;
+	[SerializeField] SpriteRenderer healthBar;
 
+	[SerializeField] int maxHealth;
 	[SerializeField] int health;
 	[SerializeField] int damage;
 	[SerializeField] float attackRadius;
 
 	[SerializeField] float movementSpeed;
 	[SerializeField] Vector2 movementDir;
+
+	Vector2 initialScale;
 
 	Rigidbody2D rigidBody;
 	CircleCollider2D circleCollider;
@@ -36,17 +40,27 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 		rigidBody.isKinematic = true;
 		rigidBody.useFullKinematicContacts = true;
+		initialScale = transform.localScale;
 	}
 
 	void OnEnable() {
+		(this as IPoolable).reset();
+	}
+
+	// TODO
+	void IPoolable.reset() {
+		health = maxHealth;
+		flashEffect.enabled = false;
+		exclamation.enabled = false;
+		transform.localScale = initialScale;
+		updateHealthBar(health, maxHealth);
 		StartCoroutine(chaseAndAttack());
 	}
 
 	// TODO
-	void IPoolable.reset() { }
-
-	// TODO
-	void IPoolable.returnToPool() { }
+	void IPoolable.returnToPool() {
+		gameObject.SetActive(false);
+	}
 
 	// TODO This deforms the enemy and causes weird behavior when player attack period is low.
 	// Current damage behavior should caused by axe, because it stuns the enemy (knockback)
@@ -56,26 +70,32 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 		health -= damage;
 		StopAllCoroutines();
-		StartCoroutine(damageEffects(0.5f));
-		// updateHealthBar();
+		StartCoroutine(damageEffects(0.2f));
+		updateHealthBar(health, maxHealth);
 
 		if (health <= 0) {
 			// Stop and die
 			stride(0);
 			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
+			LevelManager.getInstance().getParticles().spawnParticles(getEnemyType(), transform.position);
 			Events.getInstance().enemyBeaten.Invoke(getEnemyType());
 		}
 	}
 
 	IEnumerator damageEffects(float duration) {
-		StartCoroutine(flash(0.5f));
-		StartCoroutine(wobble(0.5f));
-		StartCoroutine(knockback(0.5f));
+		StartCoroutine(flash(duration));
+		StartCoroutine(wobble(duration));
+		StartCoroutine(knockback(duration));
 		yield return new WaitForSeconds(duration);
 		StartCoroutine(chaseAndAttack());
 	}
 
+	// Scale the health bar to visualize health
+	void updateHealthBar(int health, int maxHealth) {
+		float healthBarWidth = Mathf.Clamp((float) health / maxHealth, 0, maxHealth);
+		healthBar.size = new Vector2(healthBarWidth, 0.125f);
+	}
 
 	// Movement utilities
 	Vector2 checkForWallsAlongDirection(Vector2 direction) {
@@ -213,7 +233,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	IEnumerator knockback(float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * time));
+			rigidBody.MovePosition(initialPosition + Vector2.up * duration * Mathf.Sin(Mathf.PI / duration * time));
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -256,8 +276,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	IEnumerator wobble(float duration) {
 		float frequency = 20f;
 		float amount = 0.1f;
-
-		Vector2 initialScale = transform.localScale;
 
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
 			float scale = Mathf.Sin(Mathf.PI * frequency * time / duration) * amount;

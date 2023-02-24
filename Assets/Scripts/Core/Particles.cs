@@ -13,7 +13,7 @@ public class Particles : MonoBehaviour {
 	}
 
 	public void spawnParticles(EnemyType enemyType, Vector2 position) {
-
+		objectPool.spawn(getEnemyParticles(enemyType), position);
 	}
 
 	public void spawnParticles(ProjectileType projectileType, Vector2 position) {
