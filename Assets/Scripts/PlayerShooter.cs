@@ -6,63 +6,54 @@ public class PlayerShooter : MonoBehaviour {
 	bool isEngaging = false;
 	Transform target;
 
-	[SerializeField] Weapon weapon;
-
 	void Start() {
 		StartCoroutine(checkRadiusPeriodically(6, 0.2f));
 	}
 
-	void OnCollisionEnter2D(Collision2D other) {
-		if (other.gameObject.layer == Layers.weapon) {
-			Weapon weapon = other.gameObject.GetComponent<Weapon>();
-			this.weapon = weapon;
-			weapon.equip(transform);
-		}
-	}
-
-	// Check radius for enemies, sort them by their path progress, make the first one the target
-	// TODO Faulty behavior
 	IEnumerator checkRadiusPeriodically(float radius, float period) {
 		ContactFilter2D contactFilter = new ContactFilter2D();
 		contactFilter.SetLayerMask(Layers.enemyMask);
-		Collider2D[] enemiesAround = new Collider2D[8];
+		List<Collider2D> enemiesAround = new List<Collider2D>();
+		SortedList<float, Collider2D> enemiesAroundS = new SortedList<float, Collider2D>(new DuplicateKeyComparer<float>());
+		
+		enemiesAroundS.Add(0, new Collider2D());
+		enemiesAroundS.Add(0, new Collider2D());
+
+		Inventory inventory = GetComponentInChildren<Inventory>();
 
 		while (true) {
 			yield return new WaitForSeconds(period);
 
-			int enemyCount = Physics2D.OverlapCircle(transform.position, radius, contactFilter, enemiesAround);
-			if (enemyCount == 0) {
-				target = null;
-				continue;
-			}
+			Physics2D.OverlapCircle(transform.position, radius, contactFilter, enemiesAround);
+			target = getClosestEnemy(enemiesAround);
 
-			target = getClosestEnemy(enemiesAround, enemyCount);
-
-			if (!isEngaging && weapon is not null)
-				StartCoroutine(attackPeriodically(weapon.getAttackPeriod()));
+			if (!isEngaging && inventory.getWeapon() is not null)
+				StartCoroutine(attackPeriodically(inventory.getWeapon()));
 		}
 	}
 
-	Transform getClosestEnemy(Collider2D[] enemiesAround, int enemyCount) {
+	Transform getClosestEnemy(List<Collider2D> enemiesAround) {
 		float closestDistanceSqr = Mathf.Infinity;
 		Transform closestEnemy = null;
-		for (int i = 0; i < enemyCount; i++) {
-			float distanceSqr = Vector2.Dot(transform.position, enemiesAround[i].transform.position);
+
+		foreach (Collider2D enemy in enemiesAround) {
+			float distanceSqr = (transform.position - enemy.transform.position).sqrMagnitude;
 			if (distanceSqr < closestDistanceSqr) {
 				closestDistanceSqr = distanceSqr;
-				closestEnemy = enemiesAround[i].transform;
+				closestEnemy = enemy.transform;
 			}
 		}
 		return closestEnemy;
 	}
 
-	IEnumerator attackPeriodically(float period) {
+	IEnumerator attackPeriodically(Weapon weapon) {
 		isEngaging = true;
+		Inventory inventory = GetComponentInChildren<Inventory>();
 
 		// Attack while target is active, and hero is not being dragged
 		while (target != null && target.gameObject.activeInHierarchy) {
 			throwProjectile(target, weapon);
-			yield return new WaitForSeconds(period);
+			yield return new WaitForSeconds(weapon.getAttackPeriod());
 		}
 
 		target = null;
