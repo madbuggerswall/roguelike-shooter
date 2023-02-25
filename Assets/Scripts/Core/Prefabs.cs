@@ -119,7 +119,14 @@ public class Prefabs : MonoBehaviour {
 		}
 	}
 
-	public Valuable getValuable() {
+	public Valuable getValuable(System.Type type) {
+		if (type == typeof(Coin))
+			return coin;
+		else if (type == typeof(Ring))
+			return ring;
+		else if (type == typeof(Bracelet))
+			return bracelet;
+
 		return coin;
 	}
 

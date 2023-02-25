@@ -44,12 +44,25 @@ public class Player : MonoBehaviour {
 	}
 
 	void move() {
-		movementDir.Normalize();
-		movementDir = checkForWallsAlongDirection(movementDir);
-		rigidBody.MovePosition(rigidBody.position + movementDir * movementSpeed * Time.fixedDeltaTime);
+		moveAlongDirection(movementDir.normalized, movementSpeed);
 		stride();
 	}
 
+
+	// Wall aware movement
+	void moveAlongDirection(Vector2 direction, float speed) {
+		direction = checkForWallsAlongDirection(direction);
+		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
+	}
+
+	// Wall aware movement
+	void moveToPosition(Vector2 position) {
+		Vector2 direction = position - rigidBody.position;
+		direction = checkForWallsAlongDirection(direction);
+		rigidBody.MovePosition(rigidBody.position + direction);
+	}
+
+	// TODO Borrow this function from Enemy class
 	Vector2 checkForWallsAlongDirection(Vector2 direction) {
 		Vector2 verticalPosition = rigidBody.position + Vector2.up * Mathf.Sign(direction.y);
 		Vector2 horizontalPosition = rigidBody.position + Vector2.right * Mathf.Sign(direction.x);
@@ -82,7 +95,7 @@ public class Player : MonoBehaviour {
 		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
 			Vector2 vertical = Vector2.up * Mathf.Sin(Mathf.PI * elapsedTime / duration);
 			Vector2 horizontal = Vector2.right * Mathf.Lerp(0f, horizontalTarget, elapsedTime / duration);
-			rigidBody.MovePosition(initialPosition + vertical + horizontal);
+			moveToPosition(initialPosition + vertical + horizontal);
 			yield return new WaitForFixedUpdate();
 		}
 	}

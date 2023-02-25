@@ -14,7 +14,7 @@ public class DropManager : MonoBehaviour {
 	}
 
 	void onEnemyBeaten(EnemyType enemyType, Vector2 position) {
-		// Coin coinPrefab = Prefabs.getInstance().getValuable();
-		// objectPool.spawn(coinPrefab.gameObject, position);
+		Valuable coinPrefab = Prefabs.getInstance().getValuable(typeof(Coin));
+		objectPool.spawn(coinPrefab.gameObject, position);
 	}
 }

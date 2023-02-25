@@ -7,7 +7,6 @@ interface ICollectible {
 }
 
 public class Inventory : MonoBehaviour {
-
 	Weapon weapon;
 	Armor armor;
 
@@ -33,9 +32,9 @@ public class Inventory : MonoBehaviour {
 		else if (collectible is Upgrade)
 			throw new System.NotImplementedException();
 		else if (collectible is Valuable)
-			throw new System.NotImplementedException();
+			earn(collectible as Valuable);
 		else if (collectible is Consumable)
-			throw new System.NotImplementedException();
+			consume(collectible as Consumable);
 	}
 
 	void equip(Weapon weapon) {
@@ -52,6 +51,21 @@ public class Inventory : MonoBehaviour {
 		this.armor.transform.localPosition = Vector2.zero;
 
 		(armor as ICollectible).onCollect();
+	}
+
+	void equip(Upgrade upgrade) {
+		upgrades.Add(upgrade);
+		(upgrade as ICollectible).onCollect();
+	}
+
+	void earn(Valuable valuable) {
+		coins += valuable.getCoinValue();
+		(valuable as ICollectible).onCollect();
+	}
+
+	void consume(Consumable consumable) {
+		// Do consumable stuff here
+		(consumable as ICollectible).onCollect();
 	}
 
 	IEnumerator checkItemsAround(float radius, float period) {
@@ -92,6 +106,7 @@ public class Inventory : MonoBehaviour {
 		}
 	}
 
-
+	// Getters
 	public Weapon getWeapon() { return weapon; }
+	public Armor getArmor() { return armor; }
 }

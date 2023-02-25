@@ -113,11 +113,13 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		return direction;
 	}
 
+	// Wall aware movement
 	void moveAlongDirection(Vector2 direction, float speed) {
 		direction = checkForWallsAlongDirection(direction);
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
+	// Wall aware movement
 	void moveToPosition(Vector2 position) {
 		Vector2 direction = position - rigidBody.position;
 		direction = checkForWallsAlongDirection(direction);
@@ -233,7 +235,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	IEnumerator knockback(float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * duration * Mathf.Sin(Mathf.PI / duration * time));
+			moveToPosition(initialPosition + Vector2.up * duration * Mathf.Sin(Mathf.PI / duration * time));
 			yield return new WaitForFixedUpdate();
 		}
 	}

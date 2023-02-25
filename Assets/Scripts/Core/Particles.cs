@@ -5,6 +5,7 @@ using UnityEngine;
 public class Particles : MonoBehaviour {
 	[SerializeField] GameObject swordPrefab;
 	[SerializeField] GameObject jellyPrefab;
+	[SerializeField] GameObject coinPrefab;
 
 	ObjectPool objectPool;
 
@@ -18,6 +19,10 @@ public class Particles : MonoBehaviour {
 
 	public void spawnParticles(ProjectileType projectileType, Vector2 position) {
 		objectPool.spawn(getProjectileParticles(projectileType), position);
+	}
+
+	public void spawnParticles(Vector2 position){
+		objectPool.spawn(coinPrefab, position);
 	}
 
 	GameObject getEnemyParticles(EnemyType enemyType) {
