@@ -8,10 +8,23 @@ namespace Waves {
 		float period;
 		Queue<EnemyType> enemyQueue;
 
-		// Gist is it will be a queue of prefab references rather than a enum queue.
+		public Wave() {
+			this.period = 1f;
+			this.enemyQueue = new Queue<EnemyType>();
+		}
+
 		public Wave(float period) {
 			this.period = period;
-			enemyQueue = new Queue<EnemyType>();
+			this.enemyQueue = new Queue<EnemyType>();
+		}
+
+		public Wave(params EnemyType[] enemyQueue) : this() {
+			setEnemies(enemyQueue);
+		}
+
+		// Gist is it will be a queue of prefab references rather than a enum queue.
+		public Wave(params (int, EnemyType)[] enemyEntries) : this() {
+			setEnemies(enemyEntries);
 		}
 
 		// Set enemies manually

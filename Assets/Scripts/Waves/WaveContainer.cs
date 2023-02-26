@@ -11,35 +11,46 @@ namespace Waves {
 
 		// Manual creation of waves. Monsters spawn more frequently as waves proceed
 		void initializeWaves() {
-			Wave wave1 = new Wave(1f);
-			wave1.setEnemies(
-				EnemyType.jelly,
-				EnemyType.jelly,
-				EnemyType.jelly,
-				EnemyType.jelly);
+			queue = new Queue<Wave>();
 
-			Wave wave2 = new Wave(1f);
-			wave2.setEnemies(
+			queue.Enqueue(new Wave(
+				EnemyType.jelly,
+				EnemyType.jelly,
+				EnemyType.jelly,
+				EnemyType.jelly
+			));
+
+			queue.Enqueue(new Wave(
+				(6, EnemyType.jelly)
+			));
+
+			queue.Enqueue(new Wave(
+				(6, EnemyType.jelly),
+				(2, EnemyType.ghost)
+			));
+
+			queue.Enqueue(new Wave(
 				(8, EnemyType.jelly),
-				(4, EnemyType.ghost));
+				(2, EnemyType.ghost)
+			));
 
-			Wave wave3 = new Wave(0.2f);
-			wave3.setEnemies(
+			queue.Enqueue(new Wave(
+				(4, EnemyType.jelly),
+				(4, EnemyType.ghost)
+			));
+
+			queue.Enqueue(new Wave(
 				(12, EnemyType.jelly),
-				(12, EnemyType.ghost));
+				(12, EnemyType.ghost)
+			));
 
-			Wave wave4 = new Wave(1f);
-			wave4.setEnemies(
+			queue.Enqueue(new Wave(
 				(4, EnemyType.jelly),
 				(4, EnemyType.brute),
-				(4, EnemyType.ghost));
+				(4, EnemyType.ghost)
+			));
 
-
-			queue = new Queue<Wave>();
-			queue.Enqueue(wave1);
-			queue.Enqueue(wave2);
-			queue.Enqueue(wave3);
-			queue.Enqueue(wave4);
+			Debug.Log("Total wave count: " + queue.Count);
 		}
 
 		public Queue<Wave> getQueue() { return queue; }
