@@ -224,7 +224,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		Vector2 direction = (target.position - transform.position).normalized;
 
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + direction * Mathf.Sin(Mathf.PI * Tween.easeOutQuad(time, duration)));
+			moveToPosition(initialPosition + direction * Mathf.Sin(Mathf.PI * Tween.easeOutQuad(time, duration)));
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -254,23 +254,21 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		float jumpHeight = duration;
 
 		exclamation.enabled = true;
-		circleCollider.enabled = false;
 
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI / duration * time));
+			moveToPosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI / duration * time));
 			yield return new WaitForFixedUpdate();
 		}
 
 		exclamation.enabled = false;
-		circleCollider.enabled = true;
 	}
 
 	// Juice effects
 	IEnumerator flash(float duration) {
-		flashEffect.enabled = !flashEffect.enabled;
+		flashEffect.enabled = true;
 		yield return new WaitForSeconds(duration);
-		flashEffect.enabled = !flashEffect.enabled;
+		flashEffect.enabled = false;
 	}
 
 	IEnumerator wobble(float duration) {

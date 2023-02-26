@@ -99,10 +99,10 @@ public class Prefabs : MonoBehaviour {
 	public Enemy getEnemy<T>() where T : Enemy {
 		T enemyType = null;
 		switch (enemyType) {
-			case Jelly: return jelly;
-			case Ghost: return ghost;
-			case Brute: return brute;
-			case Wizard: return wizard;
+			case var _ when typeof(T) == typeof(Jelly): return jelly;
+			case var _ when typeof(T) == typeof(Ghost): return ghost;
+			case var _ when typeof(T) == typeof(Brute): return brute;
+			case var _ when typeof(T) == typeof(Wizard): return wizard;
 
 			default: return jelly;
 		}
@@ -112,9 +112,9 @@ public class Prefabs : MonoBehaviour {
 	public Weapon getWeapon<T>() where T : Weapon {
 		T weaponType = null;
 		switch (weaponType) {
-			case Sword: return sword;
-			case Axe: return axe;
-			case Bow: return bow;
+			case var _ when typeof(T) == typeof(Sword): return sword;
+			case var _ when typeof(T) == typeof(Axe): return axe;
+			case var _ when typeof(T) == typeof(Bow): return bow;
 
 			default: return sword;
 		}
@@ -122,11 +122,10 @@ public class Prefabs : MonoBehaviour {
 
 	// Projectile
 	public Projectile getProjectile<T>() where T : Projectile {
-		T projectileType = null;
-		switch (projectileType) {
-			case SwordProjectile: return swordProjectile;
-			case AxeProjectile: return axeProjectile;
-			case Arrow: return arrow;
+		switch (true) {
+			case var _ when typeof(T) == typeof(SwordProjectile): return swordProjectile;
+			case var _ when typeof(T) == typeof(AxeProjectile): return axeProjectile;
+			case var _ when typeof(T) == typeof(Arrow): return arrow;
 
 			default: return swordProjectile;
 		}
@@ -134,21 +133,19 @@ public class Prefabs : MonoBehaviour {
 
 	// Valuable
 	public Valuable getValuable<T>() where T : Valuable {
-		T valuableType = null;
-		switch (valuableType) {
-			case Coin: return coin;
-			case Ring: return ring;
-			case Bracelet: return bracelet;
+		switch (true) {
+			case var _ when typeof(T) == typeof(Coin): return coin;
+			case var _ when typeof(T) == typeof(Ring): return ring;
+			case var _ when typeof(T) == typeof(Bracelet): return bracelet;
 
 			default: return coin;
 		}
 	}
 	// Consumable
 	public Consumable getConsumable<T>() where T : Consumable {
-		T consumableType = null;
-		switch (consumableType) {
-			case Beef: return beef;
-			case Potion: return potion;
+		switch (true) {
+			case var _ when typeof(T) == typeof(Beef): return beef;
+			case var _ when typeof(T) == typeof(Potion): return potion;
 
 			default: return beef;
 		}
@@ -156,11 +153,10 @@ public class Prefabs : MonoBehaviour {
 
 	// Container
 	public Container getContainer<T>() where T : Container {
-		T containerType = null;
-		switch (containerType) {
-			case SmallPot: return smallPot;
-			case Pot: return pot;
-			case Chest: return chest;
+		switch (true) {
+			case var _ when typeof(T) == typeof(SmallPot): return smallPot;
+			case var _ when typeof(T) == typeof(Pot): return pot;
+			case var _ when typeof(T) == typeof(Chest): return chest;
 
 			default: return smallPot;
 		}
@@ -168,14 +164,13 @@ public class Prefabs : MonoBehaviour {
 
 	// Upgrade
 	public Upgrade getUpgrade<T>() where T : Upgrade {
-		T upgradeType = null;
-		switch (upgradeType) {
-			case DamageUpgrade: return damageUpgrade;
-			case HealthUpgrade: return healthUpgrade;
-			case MagnetUpgrade: return magnetUpgrade;
-			case MovementUpgrade: return movementUpgrade;
-			case PeriodUpgrade: return periodUpgrade;
-			case RangeUpgrade: return rangeUpgrade;
+		switch (true) {
+			case var _ when typeof(T) == typeof(DamageUpgrade): return damageUpgrade;
+			case var _ when typeof(T) == typeof(HealthUpgrade): return healthUpgrade;
+			case var _ when typeof(T) == typeof(MagnetUpgrade): return magnetUpgrade;
+			case var _ when typeof(T) == typeof(MovementUpgrade): return movementUpgrade;
+			case var _ when typeof(T) == typeof(PeriodUpgrade): return periodUpgrade;
+			case var _ when typeof(T) == typeof(RangeUpgrade): return rangeUpgrade;
 
 			default: return damageUpgrade;
 		}
