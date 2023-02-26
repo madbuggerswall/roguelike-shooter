@@ -25,5 +25,5 @@ public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 	public float getAttackPeriod() { return attackPeriod; }
 	public float getProjectileSpeed() { return projectileSpeed; }
 	public int getProjectileDamage() { return projectileDamage; }
-	public abstract ProjectileType getProjectileType();
+	public abstract Projectile getProjectilePrefab();
 }

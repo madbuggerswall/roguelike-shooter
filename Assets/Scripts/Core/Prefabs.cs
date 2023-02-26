@@ -38,7 +38,7 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] Pot pot;
 	[SerializeField] SmallPot smallPot;
 
-	[Header("Valueables")]
+	[Header("Valuables")]
 	[SerializeField] Coin coin;
 	[SerializeField] Ring ring;
 	[SerializeField] Bracelet bracelet;
@@ -98,6 +98,7 @@ public class Prefabs : MonoBehaviour {
 		rangeUpgrade = GetComponentInChildren<RangeUpgrade>(true);
 	}
 
+	// Enemy
 	public Enemy getEnemy(EnemyType enemyType) {
 		switch (enemyType) {
 			case EnemyType.jelly: return jelly;
@@ -109,26 +110,81 @@ public class Prefabs : MonoBehaviour {
 		}
 	}
 
-	public Projectile getProjectile(ProjectileType projectileType) {
+	// Weapon
+	public Weapon getWeapon<T>() where T : Weapon {
+		T weaponType = null;
+		switch (weaponType) {
+			case Sword: return sword;
+			case Axe: return axe;
+			case Bow: return bow;
+
+			default: return sword;
+		}
+	}
+
+	// Projectile
+	public Projectile getProjectile<T>() where T : Projectile {
+		T projectileType = null;
 		switch (projectileType) {
-			case ProjectileType.sword: return swordProjectile;
-			case ProjectileType.axe: return axeProjectile;
-			case ProjectileType.arrow: return arrow;
+			case SwordProjectile: return swordProjectile;
+			case AxeProjectile: return axeProjectile;
+			case Arrow: return arrow;
 
 			default: return swordProjectile;
 		}
 	}
 
-	public Valuable getValuable(System.Type type) {
-		if (type == typeof(Coin))
-			return coin;
-		else if (type == typeof(Ring))
-			return ring;
-		else if (type == typeof(Bracelet))
-			return bracelet;
+	// Valuable
+	public Valuable getValuable<T>() where T : Valuable {
+		T valuableType = null;
+		switch (valuableType) {
+			case Coin: return coin;
+			case Ring: return ring;
+			case Bracelet: return bracelet;
 
-		return coin;
+			default: return coin;
+		}
 	}
+	// Consumable
+	public Consumable getConsumable<T>() where T : Consumable {
+		T consumableType = null;
+		switch (consumableType) {
+			case Beef: return beef;
+			case Potion: return potion;
+
+			default: return beef;
+		}
+	}
+
+	// Container
+	public Container getContainer<T>() where T : Container {
+		T containerType = null;
+		switch (containerType) {
+			case SmallPot: return smallPot;
+			case Pot: return pot;
+			case Chest: return chest;
+
+			default: return smallPot;
+		}
+	}
+
+	// Upgrade
+	public Upgrade getUpgrade<T>() where T : Upgrade {
+		T upgradeType = null;
+		switch (upgradeType) {
+			case DamageUpgrade: return damageUpgrade;
+			case HealthUpgrade: return healthUpgrade;
+			case MagnetUpgrade: return magnetUpgrade;
+			case MovementUpgrade: return movementUpgrade;
+			case PeriodUpgrade: return periodUpgrade;
+			case RangeUpgrade: return rangeUpgrade;
+
+			default: return damageUpgrade;
+		}
+	}
+
+
+
 
 	// Singleton
 	public static Prefabs getInstance() { return instance; }

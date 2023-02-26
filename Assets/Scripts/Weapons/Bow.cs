@@ -3,5 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Bow : Weapon {
-	public override ProjectileType getProjectileType() { return ProjectileType.arrow; }
+	public override Projectile getProjectilePrefab() {
+		return Prefabs.getInstance().getProjectile<Arrow>();
+	}
 }

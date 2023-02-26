@@ -3,5 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Sword : Weapon {
-	public override ProjectileType getProjectileType() { return ProjectileType.sword; }
+	public override Projectile getProjectilePrefab() {
+		return Prefabs.getInstance().getProjectile<SwordProjectile>();
+	}
 }
