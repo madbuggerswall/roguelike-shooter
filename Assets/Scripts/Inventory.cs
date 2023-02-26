@@ -42,7 +42,7 @@ public class Inventory : MonoBehaviour {
 		this.weapon.transform.SetParent(transform);
 		this.weapon.transform.localPosition = Vector2.zero;
 
-		(weapon as ICollectible).onCollect();
+		weapon.onCollect();
 	}
 
 	void equip(Armor armor) {
@@ -50,22 +50,22 @@ public class Inventory : MonoBehaviour {
 		this.armor.transform.SetParent(transform);
 		this.armor.transform.localPosition = Vector2.zero;
 
-		(armor as ICollectible).onCollect();
+		armor.onCollect();
 	}
 
 	void equip(Upgrade upgrade) {
 		upgrades.Add(upgrade);
-		(upgrade as ICollectible).onCollect();
+		upgrade.onCollect();
 	}
 
 	void earn(Valuable valuable) {
 		coins += valuable.getCoinValue();
-		(valuable as ICollectible).onCollect();
+		valuable.onCollect();
 	}
 
 	void consume(Consumable consumable) {
 		// Do consumable stuff here
-		(consumable as ICollectible).onCollect();
+		consumable.onCollect();
 	}
 
 	IEnumerator checkItemsAround(float radius, float period) {

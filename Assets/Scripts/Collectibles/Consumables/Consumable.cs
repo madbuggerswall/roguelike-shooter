@@ -5,7 +5,8 @@ using UnityEngine;
 public abstract class Consumable : MonoBehaviour, ICollectible {
 	[SerializeField] int healthBuff;
 
-	void ICollectible.onCollect() {
+	// ICollectible
+	public void onCollect() {
 		gameObject.SetActive(false);
 	}
 }

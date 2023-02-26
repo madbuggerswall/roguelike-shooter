@@ -8,10 +8,13 @@ public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 	[SerializeField] protected float projectileSpeed;
 	[SerializeField] protected int projectileDamage;
 
+	// AudioClip onEquip
+	// ParticleSystem onEquip
+
 	ProjectileType projectileType;
 
-	// There might be a discard function too
-	void ICollectible.onCollect() {
+	// ICollectible
+	public void onCollect() {
 		// Equip sound
 		// Equip particles
 		gameObject.SetActive(false);

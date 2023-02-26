@@ -5,9 +5,8 @@ using UnityEngine;
 public abstract class Valuable : MonoBehaviour, ICollectible {
 	[SerializeField] int coinValue;
 
-	void ICollectible.onCollect() {
+	public virtual void onCollect() {
 		gameObject.SetActive(false);
-		LevelManager.getInstance().getParticles().spawnParticles(transform.position);
 	}
 
 	public int getCoinValue() { return coinValue; }

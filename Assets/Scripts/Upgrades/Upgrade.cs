@@ -5,7 +5,8 @@ using UnityEngine;
 public abstract class Upgrade : MonoBehaviour, ICollectible {
 	public abstract void apply();
 
-	void ICollectible.onCollect() {
+	// ICollectible
+	public void onCollect() {
 		gameObject.SetActive(false);
 	}
 }
