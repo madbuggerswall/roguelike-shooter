@@ -8,6 +8,9 @@ public class SoundManager : MonoBehaviour {
 	[SerializeField] AudioSource enemyHit;
 	[SerializeField] AudioSource projectileThrown;
 
+	// Inventory
+	[SerializeField] AudioSource coinCollected;
+
 	void Start() {
 		Events.getInstance().playerHit.AddListener(delegate { playAudioSource(playerHit); });
 		Events.getInstance().playerNoticed.AddListener(delegate { playAudioSource(playerNoticed); });
@@ -20,4 +23,7 @@ public class SoundManager : MonoBehaviour {
 		audioSource.pitch = Random.Range(0.96f, 1.04f);
 		audioSource.Play();
 	}
+
+	// Inventory
+	public void playCoinCollected() { playAudioSource(coinCollected); }
 }
