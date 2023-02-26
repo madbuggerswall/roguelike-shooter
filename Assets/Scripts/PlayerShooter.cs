@@ -58,8 +58,7 @@ public class PlayerShooter : MonoBehaviour {
 	// Spawn and throw a projectile, setting its target and damage value
 	protected void throwProjectile(Transform target, Weapon weapon) {
 		ObjectPool objectPool = ProjectileContainer.getInstance().GetComponentInChildren<ObjectPool>();
-		Projectile projectilePrefab = Prefabs.getInstance().getProjectile(weapon.getProjectileType());
-		Projectile projectile = objectPool.spawn(projectilePrefab.gameObject, transform.position).GetComponent<Projectile>();
+		Projectile projectile = objectPool.spawn(weapon.getProjectilePrefab(), transform.position);
 		projectile.throwAtTarget(target, weapon.getProjectileDamage(), weapon.getProjectileSpeed());
 		Events.getInstance().projectileThrown.Invoke();
 	}
