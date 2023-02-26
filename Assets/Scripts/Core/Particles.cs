@@ -17,11 +17,11 @@ public class Particles : MonoBehaviour {
 		objectPool.spawn(getEnemyParticles(enemyType), position);
 	}
 
-	public void spawnParticles(ProjectileType projectileType, Vector2 position) {
-		objectPool.spawn(getProjectileParticles(projectileType), position);
+	public void spawnParticles<T>(T projectileType, Vector2 position) where T : Projectile {
+		objectPool.spawn(getProjectileParticles<T>(projectileType), position);
 	}
 
-	public void spawnParticles(Vector2 position){
+	public void spawnParticles(Vector2 position) {
 		objectPool.spawn(coinPrefab, position);
 	}
 
@@ -35,11 +35,12 @@ public class Particles : MonoBehaviour {
 		}
 	}
 
-	GameObject getProjectileParticles(ProjectileType projectileType) {
+	GameObject getProjectileParticles<T>(T projectileType) where T : Projectile {
 		switch (projectileType) {
-			case ProjectileType.sword: return swordPrefab;
-			case ProjectileType.axe: return swordPrefab;
-			case ProjectileType.arrow: return swordPrefab;
+			case SwordProjectile: return swordPrefab;
+			case AxeProjectile: return swordPrefab;
+			case Arrow: return swordPrefab;
+
 			default: return swordPrefab;
 		}
 	}

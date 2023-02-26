@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ProjectileType { sword, axe, arrow }
 // IPoolable
 public abstract class Projectile : MonoBehaviour {
 	[SerializeField] int damage = 10;
@@ -22,7 +21,7 @@ public abstract class Projectile : MonoBehaviour {
 			other.gameObject.GetComponent<Enemy>().takeDamage(damage);
 			gameObject.SetActive(false);
 			Events.getInstance().enemyHit.Invoke(other);
-			LevelManager.getInstance().getParticles().spawnParticles(getProjectileType(), rigidBody.position);
+			LevelManager.getInstance().getParticles().spawnParticles(this, rigidBody.position);
 		}
 	}
 
@@ -49,6 +48,5 @@ public abstract class Projectile : MonoBehaviour {
 	}
 
 	// Getters
-	protected abstract ProjectileType getProjectileType();
 	public int getDamage() { return damage; }
 }

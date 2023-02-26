@@ -11,8 +11,6 @@ public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 	// AudioClip onEquip
 	// ParticleSystem onEquip
 
-	ProjectileType projectileType;
-
 	// ICollectible
 	public void onCollect() {
 		// Equip sound
