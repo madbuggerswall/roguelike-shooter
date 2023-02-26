@@ -44,11 +44,11 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 	void OnEnable() {
-		(this as IPoolable).reset();
+		reset();
 	}
 
-	// TODO
-	void IPoolable.reset() {
+	// IPoolable
+	public void reset() {
 		health = maxHealth;
 		flashEffect.enabled = false;
 		exclamation.enabled = false;
@@ -57,8 +57,8 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		StartCoroutine(chaseAndAttack());
 	}
 
-	// TODO
-	void IPoolable.returnToPool() {
+	// IPoolable
+	public void returnToPool() {
 		gameObject.SetActive(false);
 	}
 

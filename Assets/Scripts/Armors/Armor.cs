@@ -5,7 +5,8 @@ using UnityEngine;
 public abstract class Armor : MonoBehaviour, ICollectible {
 	[SerializeField] int shieldAmount;
 
-	void ICollectible.onCollect() {
+	// ICollectible
+	public void onCollect() {
 		gameObject.SetActive(false);
 	}
 	
