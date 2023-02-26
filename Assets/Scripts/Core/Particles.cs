@@ -13,30 +13,31 @@ public class Particles : MonoBehaviour {
 		objectPool = GetComponentInChildren<ObjectPool>();
 	}
 
-	public void spawnParticles(EnemyType enemyType, Vector2 position) {
-		objectPool.spawn(getEnemyParticles(enemyType), position);
+	public void spawnParticles(Enemy enemy, Vector2 position) {
+		objectPool.spawn(getParticles(enemy), position);
 	}
 
-	public void spawnParticles<T>(T projectileType, Vector2 position) where T : Projectile {
-		objectPool.spawn(getProjectileParticles<T>(projectileType), position);
+	public void spawnParticles(Projectile projectile, Vector2 position) {
+		objectPool.spawn(getParticles(projectile), position);
 	}
 
 	public void spawnParticles(Vector2 position) {
 		objectPool.spawn(coinPrefab, position);
 	}
 
-	GameObject getEnemyParticles(EnemyType enemyType) {
-		switch (enemyType) {
-			case EnemyType.jelly: return jellyPrefab;
-			case EnemyType.ghost: return jellyPrefab;
-			case EnemyType.brute: return jellyPrefab;
-			case EnemyType.wizard: return jellyPrefab;
+	GameObject getParticles(Enemy enemy) {
+		switch (enemy) {
+			case Jelly: return jellyPrefab;
+			case Ghost: return jellyPrefab;
+			case Brute: return jellyPrefab;
+			case Wizard: return jellyPrefab;
+
 			default: return jellyPrefab;
 		}
 	}
 
-	GameObject getProjectileParticles<T>(T projectileType) where T : Projectile {
-		switch (projectileType) {
+	GameObject getParticles(Projectile projectile) {
+		switch (projectile) {
 			case SwordProjectile: return swordPrefab;
 			case AxeProjectile: return swordPrefab;
 			case Arrow: return swordPrefab;

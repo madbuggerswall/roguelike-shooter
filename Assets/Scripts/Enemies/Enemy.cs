@@ -13,8 +13,6 @@ using UnityEngine.Events;
 // Wizard shoot		speed: low | damage: medium
 // Boss?
 
-public enum EnemyType { jelly, ghost, brute, wizard }
-
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] SpriteRenderer flashEffect;
@@ -78,8 +76,8 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 			stride(0);
 			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
-			LevelManager.getInstance().getParticles().spawnParticles(getEnemyType(), transform.position);
-			Events.getInstance().enemyBeaten.Invoke(getEnemyType(), transform.position);
+			LevelManager.getInstance().getParticles().spawnParticles(this, transform.position);
+			Events.getInstance().enemyBeaten.Invoke(this, transform.position);
 		}
 	}
 
@@ -287,7 +285,4 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 		transform.localScale = initialScale;
 	}
-
-	// Abstract
-	protected abstract EnemyType getEnemyType();
 }

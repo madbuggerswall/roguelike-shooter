@@ -13,41 +13,47 @@ namespace Waves {
 		void initializeWaves() {
 			queue = new Queue<Wave>();
 
+			Prefabs prefabs = LevelManager.getInstance().getPrefabs();
+			Enemy jelly = prefabs.getEnemy<Jelly>();
+			Enemy ghost = prefabs.getEnemy<Ghost>();
+			Enemy brute = prefabs.getEnemy<Brute>();
+			Enemy wizard = prefabs.getEnemy<Wizard>();
+
 			queue.Enqueue(new Wave(
-				EnemyType.jelly,
-				EnemyType.jelly,
-				EnemyType.jelly,
-				EnemyType.jelly
+				jelly,
+				jelly,
+				jelly,
+				jelly
 			));
 
 			queue.Enqueue(new Wave(
-				(6, EnemyType.jelly)
+				(6, jelly)
 			));
 
 			queue.Enqueue(new Wave(
-				(6, EnemyType.jelly),
-				(2, EnemyType.ghost)
+				(6, jelly),
+				(2, ghost)
 			));
 
 			queue.Enqueue(new Wave(
-				(8, EnemyType.jelly),
-				(2, EnemyType.ghost)
+				(8, jelly),
+				(2, ghost)
 			));
 
 			queue.Enqueue(new Wave(
-				(4, EnemyType.jelly),
-				(4, EnemyType.ghost)
+				(4, jelly),
+				(4, ghost)
 			));
 
 			queue.Enqueue(new Wave(
-				(12, EnemyType.jelly),
-				(12, EnemyType.ghost)
+				(12, jelly),
+				(12, ghost)
 			));
 
 			queue.Enqueue(new Wave(
-				(4, EnemyType.jelly),
-				(4, EnemyType.brute),
-				(4, EnemyType.ghost)
+				(4, jelly),
+				(4, brute),
+				(4, ghost)
 			));
 
 			Debug.Log("Total wave count: " + queue.Count);

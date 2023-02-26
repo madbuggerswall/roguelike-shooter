@@ -52,13 +52,12 @@ namespace Waves {
 
 		// Spawn enemies periodically every Wave.period seconds
 		IEnumerator spawnEnemies(Wave wave) {
-			Queue<EnemyType> enemyQueue = wave.getEnemyQueue();
+			Queue<Enemy> enemyQueue = wave.getEnemyQueue();
 			Vector2[] spawnPositions = spawnPoints.getPositions();
 
 			while (enemyQueue.Count > 0) {
-				Enemy enemyPrefab = Prefabs.getInstance().getEnemy(enemyQueue.Dequeue());
 				Vector2 spawnPosition = spawnPositions[enemyQueue.Count % spawnPositions.Length];
-				objectPool.spawn(enemyPrefab.gameObject, spawnPosition);
+				objectPool.spawn(enemyQueue.Dequeue(), spawnPosition);
 				yield return new WaitForSeconds(wave.getPeriod());
 			}
 		}

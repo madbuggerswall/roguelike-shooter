@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class Bow : Weapon {
 	public override Projectile getProjectilePrefab() {
-		return Prefabs.getInstance().getProjectile<Arrow>();
+		return LevelManager.getInstance().getPrefabs().getProjectile<Arrow>();
 	}
 }

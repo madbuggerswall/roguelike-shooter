@@ -10,7 +10,7 @@ class Events {
 	public UnityEvent projectileThrown;
 
 	public UnityEvent<Collision2D> enemyHit;
-	public UnityEvent<EnemyType, Vector2> enemyBeaten;
+	public UnityEvent<Enemy, Vector2> enemyBeaten;
 
 	public UnityEvent<int> waveBegan;
 
@@ -21,7 +21,7 @@ class Events {
 		projectileThrown = new UnityEvent();
 
 		enemyHit = new UnityEvent<Collision2D>();
-		enemyBeaten = new UnityEvent<EnemyType, Vector2>();
+		enemyBeaten = new UnityEvent<Enemy, Vector2>();
 
 		waveBegan = new UnityEvent<int>();
 	}

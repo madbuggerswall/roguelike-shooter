@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class Axe : Weapon {
 	public override Projectile getProjectilePrefab() {
-		return Prefabs.getInstance().getProjectile<AxeProjectile>();
+		return LevelManager.getInstance().getPrefabs().getProjectile<AxeProjectile>();
 	}
 }

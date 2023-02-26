@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Mediator
+[DefaultExecutionOrder(-4)]
 public class LevelManager : MonoBehaviour {
 	static LevelManager instance;
 
 	Player player;
-
+	Prefabs prefabs;
 	Particles particles;
 	SoundManager soundManager;
 
@@ -22,11 +23,13 @@ public class LevelManager : MonoBehaviour {
 
 		// Find mediated objects
 		player = FindObjectOfType<Player>();
+		prefabs = FindObjectOfType<Prefabs>();
 		particles = FindObjectOfType<Particles>();
 		soundManager = FindObjectOfType<SoundManager>();
 	}
 
 	public Player getPlayer() { return player; }
+	public Prefabs getPrefabs() { return prefabs; }
 	public Particles getParticles() { return particles; }
 	public SoundManager getSoundManager() { return soundManager; }
 

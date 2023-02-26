@@ -6,12 +6,10 @@ using UnityEngine;
 // Distribute prefabs to related classes.
 
 public class Prefabs : MonoBehaviour {
-	static Prefabs instance;
-
 	[Header("Enemies")]
 	[SerializeField] Jelly jelly;
-	[SerializeField] Brute brute;
 	[SerializeField] Ghost ghost;
+	[SerializeField] Brute brute;
 	[SerializeField] Wizard wizard;
 
 	[Header("Weapons")]
@@ -53,7 +51,6 @@ public class Prefabs : MonoBehaviour {
 
 
 	void Awake() {
-		assertSingleton();
 
 		// Enemies
 		jelly = GetComponentInChildren<Jelly>(true);
@@ -99,12 +96,13 @@ public class Prefabs : MonoBehaviour {
 	}
 
 	// Enemy
-	public Enemy getEnemy(EnemyType enemyType) {
+	public Enemy getEnemy<T>() where T : Enemy {
+		T enemyType = null;
 		switch (enemyType) {
-			case EnemyType.jelly: return jelly;
-			case EnemyType.ghost: return ghost;
-			case EnemyType.brute: return brute;
-			case EnemyType.wizard: return wizard;
+			case Jelly: return jelly;
+			case Ghost: return ghost;
+			case Brute: return brute;
+			case Wizard: return wizard;
 
 			default: return jelly;
 		}
@@ -182,11 +180,4 @@ public class Prefabs : MonoBehaviour {
 			default: return damageUpgrade;
 		}
 	}
-
-
-
-
-	// Singleton
-	public static Prefabs getInstance() { return instance; }
-	void assertSingleton() { if (instance == null) { instance = this; } else { Destroy(gameObject); } }
 }
