@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
+	// [SerializeField] protected float baseAttackRadius;
+	// [SerializeField] protected float baseAttackPeriod;
+	// [SerializeField] protected float baseProjectileSpeed;
+	// [SerializeField] protected int baseProjectileDamage;
+
 	[SerializeField] protected float attackRadius;
 	[SerializeField] protected float attackPeriod;
 	[SerializeField] protected float projectileSpeed;
@@ -18,8 +23,8 @@ public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 		gameObject.SetActive(false);
 	}
 
-	void IPoolable.reset() { }
-	void IPoolable.returnToPool() { }
+	public void reset() { }
+	public void returnToPool() { }
 
 	// Getters
 	public float getAttackRadius() { return attackRadius; }

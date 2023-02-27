@@ -132,19 +132,19 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * movement * Time.time));
 	}
 
-	Vector2 getPushDirection(Collider2D[] enemiesAround, int enemyCount) {
+	Vector2 getPushDirection(List<Collider2D> enemiesAround) {
 		Vector2 pushDirection = Vector2.zero;
-		for (int i = 0; i < enemyCount; i++) {
-			// Don't repel self
-			if (enemiesAround[i] == circleCollider)
+		
+		foreach (Collider2D enemy in enemiesAround) {
+			if (enemy == circleCollider)
 				continue;
 
-			float distance = Vector2.Distance(enemiesAround[i].transform.position, transform.position);
+			float distance = Vector2.Distance(enemy.transform.position, transform.position);
 			float pushStrength = 1f / (1f + distance);
-			Vector2 pushContribution = -(enemiesAround[i].transform.position - transform.position).normalized;
-
+			Vector2 pushContribution = -(enemy.transform.position - transform.position).normalized;
 			pushDirection += pushContribution * pushStrength;
 		}
+
 		return pushDirection;
 	}
 
@@ -155,14 +155,14 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		float radius = 1f;
 		ContactFilter2D contactFilter = new ContactFilter2D();
 		contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
-		Collider2D[] enemiesAround = new Collider2D[9];
+		List<Collider2D> enemiesAround = new List<Collider2D>();
 
 		while (!inRadius(rigidBody.position, target.position, attackRadius)) {
 			movementDir = ((Vector2) target.position - rigidBody.position).normalized;
 
 			// Avoid overlap
-			int enemyCount = Physics2D.OverlapCircle(rigidBody.position, radius, contactFilter, enemiesAround);
-			movementDir = movementDir + getPushDirection(enemiesAround, enemyCount).normalized;
+			Physics2D.OverlapCircle(rigidBody.position, radius, contactFilter, enemiesAround);
+			movementDir = movementDir + getPushDirection(enemiesAround).normalized;
 
 			yield return new WaitForSeconds(period);
 		}
@@ -180,7 +180,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	// Behavior/Strategy
 	IEnumerator chaseAndAttack() {
-		Transform target = LevelManager.getInstance().getPlayer().transform;
+		Transform target = LevelManager.getInstance().getHero().transform;
 
 		// While player is alive/not beaten
 		while (true) {

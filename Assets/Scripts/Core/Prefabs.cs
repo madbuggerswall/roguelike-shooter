@@ -97,8 +97,7 @@ public class Prefabs : MonoBehaviour {
 
 	// Enemy
 	public Enemy getEnemy<T>() where T : Enemy {
-		T enemyType = null;
-		switch (enemyType) {
+		switch (true) {
 			case var _ when typeof(T) == typeof(Jelly): return jelly;
 			case var _ when typeof(T) == typeof(Ghost): return ghost;
 			case var _ when typeof(T) == typeof(Brute): return brute;
@@ -110,8 +109,7 @@ public class Prefabs : MonoBehaviour {
 
 	// Weapon
 	public Weapon getWeapon<T>() where T : Weapon {
-		T weaponType = null;
-		switch (weaponType) {
+		switch (true) {
 			case var _ when typeof(T) == typeof(Sword): return sword;
 			case var _ when typeof(T) == typeof(Axe): return axe;
 			case var _ when typeof(T) == typeof(Bow): return bow;
@@ -141,6 +139,7 @@ public class Prefabs : MonoBehaviour {
 			default: return coin;
 		}
 	}
+	
 	// Consumable
 	public Consumable getConsumable<T>() where T : Consumable {
 		switch (true) {

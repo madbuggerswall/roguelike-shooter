@@ -7,7 +7,7 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour {
 	static LevelManager instance;
 
-	Player player;
+	Hero hero;
 	Prefabs prefabs;
 	Particles particles;
 	SoundManager soundManager;
@@ -22,13 +22,13 @@ public class LevelManager : MonoBehaviour {
 		Layers.initialize();
 
 		// Find mediated objects
-		player = FindObjectOfType<Player>();
+		hero = FindObjectOfType<Hero>();
 		prefabs = FindObjectOfType<Prefabs>();
 		particles = FindObjectOfType<Particles>();
 		soundManager = FindObjectOfType<SoundManager>();
 	}
 
-	public Player getPlayer() { return player; }
+	public Hero getHero() { return hero; }
 	public Prefabs getPrefabs() { return prefabs; }
 	public Particles getParticles() { return particles; }
 	public SoundManager getSoundManager() { return soundManager; }

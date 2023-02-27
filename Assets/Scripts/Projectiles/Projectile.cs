@@ -16,6 +16,7 @@ public abstract class Projectile : MonoBehaviour {
 		rigidBody = GetComponent<Rigidbody2D>();
 	}
 
+	// TODO: Break on walls too
 	void OnCollisionEnter2D(Collision2D other) {
 		if (other.gameObject.layer == Layers.enemy) {
 			other.gameObject.GetComponent<Enemy>().takeDamage(damage);
@@ -36,7 +37,6 @@ public abstract class Projectile : MonoBehaviour {
 		this.speed = speed;
 	}
 
-	// Transform based movement
 	void moveAlongDirection(Vector2 direction) {
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
