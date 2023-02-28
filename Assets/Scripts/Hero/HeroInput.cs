@@ -10,24 +10,12 @@ public class HeroInput : MonoBehaviour {
 	UnityAction controller;
 	Vector2 input;
 
+	void Awake() {
+		initializeController();
+	}
+
 	void Update() {
-		keyboardController();
-	}
-
-	public void onMove(InputAction.CallbackContext context) {
-		input = context.ReadValue<Vector2>();
-		input.Normalize();
-	}
-
-	public void onTouchMove(InputAction.CallbackContext context) {
-		float deltaMul = 2f;
-		input += deltaMul * Time.deltaTime * context.ReadValue<Vector2>();
-		input.Normalize();
-	}
-
-	public void onTouch(InputAction.CallbackContext context) {
-		if (context.canceled)
-			input = Vector2.zero;
+		controller();
 	}
 
 	// Prototyping
@@ -53,14 +41,11 @@ public class HeroInput : MonoBehaviour {
 		float deltaMul = 2f;
 		input.y += deltaMul * Time.deltaTime * Touchscreen.current.primaryTouch.delta.y.ReadValue();
 		input.x += deltaMul * Time.deltaTime * Touchscreen.current.primaryTouch.delta.x.ReadValue();
-
-		// if (Touchscreen.current.primaryTouch.phase == ) {
-		// 	input.x = input.y = 0;
-		// 	Debug.Log("No touches");
-		// }
-
 		input.Normalize();
-		// input = Vector2.ClampMagnitude(input, 1f);
+
+		if (Touchscreen.current.primaryTouch.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Ended) {
+			input = Vector2.zero;
+		}
 	}
 
 	void initializeController() {

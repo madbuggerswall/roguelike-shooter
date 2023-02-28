@@ -52,41 +52,41 @@ public class Prefabs : MonoBehaviour {
 
 	void Awake() {
 
-		// Enemies
+		// Enemies, only EnemySpawner spawns these
 		jelly = GetComponentInChildren<Jelly>(true);
 		ghost = GetComponentInChildren<Ghost>(true);
 		brute = GetComponentInChildren<Brute>(true);
 		wizard = GetComponentInChildren<Wizard>(true);
 
-		// Weapons
+		// Weapons, only DropManager spawns these
 		sword = GetComponentInChildren<Sword>(true);
 		axe = GetComponentInChildren<Axe>(true);
 		bow = GetComponentInChildren<Bow>(true);
 
-		// Projectiles
+		// Projectiles, only Weapons spawns these
 		swordProjectile = GetComponentInChildren<SwordProjectile>(true);
 		axeProjectile = GetComponentInChildren<AxeProjectile>(true);
 		arrow = GetComponentInChildren<Arrow>(true);
 
-		// Armors
+		// Armors, only DropManager spawns these
 		woodShield = GetComponentInChildren<WoodShield>(true);
 		bodyArmor = GetComponentInChildren<BodyArmor>(true);
 
-		// Consumables
+		// Consumables, only DropManager spawns these
 		beef = GetComponentInChildren<Beef>(true);
 		potion = GetComponentInChildren<Potion>(true);
 
-		// Containers
+		// Containers, only DropManager spawns these
 		chest = GetComponentInChildren<Chest>(true);
 		pot = GetComponentInChildren<Pot>(true);
 		smallPot = GetComponentInChildren<SmallPot>(true);
 
-		// Valuables
+		// Valuables, only DropManager spawns these
 		coin = GetComponentInChildren<Coin>(true);
 		ring = GetComponentInChildren<Ring>(true);
 		bracelet = GetComponentInChildren<Bracelet>(true);
 
-		// Upgrades
+		// Upgrades, only DropManager spawns these
 		damageUpgrade = GetComponentInChildren<DamageUpgrade>(true);
 		healthUpgrade = GetComponentInChildren<HealthUpgrade>(true);
 		magnetUpgrade = GetComponentInChildren<MagnetUpgrade>(true);
@@ -139,7 +139,7 @@ public class Prefabs : MonoBehaviour {
 			default: return coin;
 		}
 	}
-	
+
 	// Consumable
 	public Consumable getConsumable<T>() where T : Consumable {
 		switch (true) {

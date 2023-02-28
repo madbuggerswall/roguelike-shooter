@@ -39,28 +39,40 @@ public class DropManager : MonoBehaviour {
 	}
 
 	void onEnemyBeaten(Enemy enemy, Vector2 position) {
-		Valuable coinPrefab = LevelManager.getInstance().getPrefabs().getValuable<Coin>();
-		objectPool.spawn(coinPrefab.gameObject, position);
+		switch (enemy) {
+			case Jelly:
+				spawnJellyDrop(position);
+				break;
+
+			default:
+				spawnJellyDrop(position);
+				break;
+		}
 	}
 
-	// ICollectible getJellyDrop() {
-	// 	float coinProb = 0.6f;
-	// 	float ringProb = 0.04f;
-	// 	float beefProb = 0.04f;
+	void spawnJellyDrop(Vector2 position) {
+		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
+		(float probabilty, ICollectible prefab)[] drops = new (float, ICollectible)[]{
+			(.6f, prefabs.getValuable<Coin>()),
+			(.04f, prefabs.getValuable<Ring>()),
+			(.04f, prefabs.getConsumable<Beef>())
+		};
 
-	// 	float[] dropRates = new float[] { 0.6f, 0.04f, 0.04f };
-	// 	float[] dropRatesCDF = new float[dropRates.Length];
+		// To CDF
+		(float probabilty, ICollectible prefab)[] dropsCDF = drops;
+		for (int i = 0; i < drops.Length; i++) {
+			if (i == 0)
+				dropsCDF[i].probabilty = drops[i].probabilty;
+			else
+				dropsCDF[i].probabilty = drops[i].probabilty + dropsCDF[i - 1].probabilty;
+		}
 
-	// 	for (int i = 0; i < dropRates.Length; i++) {
-	// 		if (i == 0)
-	// 			dropRatesCDF[i] = dropRates[i];
-	// 		else
-	// 			dropRatesCDF[i] = dropRates[i] + dropRatesCDF[i - 1];
-	// 	}
-
-	// 	float randomValue = Random.value;
-	// 	foreach (float dropRate in dropRatesCDF) {
-	// 		if (randomValue < dropRate)
-	// 	}
-	// }
+		float randomValue = Random.value;
+		foreach ((float probabilty, ICollectible prefab) dropEntry in dropsCDF) {
+			if (randomValue < dropEntry.probabilty) {
+				// objectPool.spawn(dropEntry.prefab, position);
+				break;
+			}
+		}
+	}
 }

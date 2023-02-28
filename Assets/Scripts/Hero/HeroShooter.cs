@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroShooter : MonoBehaviour {
+	Transform target;
 	bool isEngaging = false;
 
 	void Start() {
@@ -14,15 +15,12 @@ public class HeroShooter : MonoBehaviour {
 		contactFilter.SetLayerMask(Layers.enemyMask);
 		List<Collider2D> enemiesAround = new List<Collider2D>();
 
-		Transform target;
-		Inventory inventory = GetComponentInChildren<Inventory>();
-
 		while (true) {
 			Physics2D.OverlapCircle(transform.position, radius, contactFilter, enemiesAround);
 			target = getClosestEnemy(enemiesAround);
 
-			if (!isEngaging && target is not null && inventory.getWeapon() is not null)
-				StartCoroutine(attackPeriodically(target, inventory.getWeapon()));
+			if (!isEngaging && target is not null)
+				StartCoroutine(attackPeriodically());
 
 			yield return new WaitForSeconds(period);
 		}
@@ -42,11 +40,13 @@ public class HeroShooter : MonoBehaviour {
 		return closestEnemy;
 	}
 
-	IEnumerator attackPeriodically(Transform target, Weapon weapon) {
+	IEnumerator attackPeriodically() {
 		isEngaging = true;
+		Inventory inventory = GetComponentInChildren<Inventory>();
+		Weapon weapon = inventory.getWeapon();
 
 		// Attack while target is active, and hero is not being dragged
-		while (target != null && target.gameObject.activeInHierarchy) {
+		while (target is not null && target.gameObject.activeInHierarchy && weapon is not null) {
 			throwProjectile(target, weapon);
 			yield return new WaitForSeconds(weapon.getAttackPeriod());
 		}

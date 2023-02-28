@@ -30,7 +30,7 @@ public class Inventory : MonoBehaviour {
 		if (collectible is Armor)
 			equip(collectible as Armor);
 		else if (collectible is Upgrade)
-			throw new System.NotImplementedException();
+			equip(collectible as Upgrade);
 		else if (collectible is Valuable)
 			earn(collectible as Valuable);
 		else if (collectible is Consumable)
@@ -70,7 +70,7 @@ public class Inventory : MonoBehaviour {
 
 	IEnumerator checkItemsAround(float radius, float period) {
 		ContactFilter2D contactFilter = new ContactFilter2D();
-		contactFilter.SetLayerMask(Layers.weaponMask | Layers.collectibleMask);
+		contactFilter.SetLayerMask(Layers.collectibleMask);
 
 		List<Collider2D> itemsAround = new List<Collider2D>();
 

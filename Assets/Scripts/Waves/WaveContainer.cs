@@ -21,7 +21,8 @@ namespace Waves {
 
 			queue.Enqueue(new Wave(jelly, jelly, jelly, jelly));
 			queue.Enqueue(new Wave((6, jelly)));
-			queue.Enqueue(new Wave((6, jelly), (2, ghost)));
+			queue.Enqueue(new Wave((2, ghost)));
+			queue.Enqueue(new Wave((4, jelly), (2, ghost)));
 			queue.Enqueue(new Wave((8, jelly), (2, ghost)));
 			queue.Enqueue(new Wave((4, jelly), (4, ghost)));
 			queue.Enqueue(new Wave((12, jelly), (12, ghost)));
