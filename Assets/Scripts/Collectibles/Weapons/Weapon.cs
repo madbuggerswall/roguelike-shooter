@@ -23,8 +23,8 @@ public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 		gameObject.SetActive(false);
 	}
 
-	public void reset() { }
-	public void returnToPool() { }
+	public void reset() { throw new System.NotImplementedException(); }
+	public void returnToPool() { throw new System.NotImplementedException(); }
 
 	// Getters
 	public float getAttackRadius() { return attackRadius; }
