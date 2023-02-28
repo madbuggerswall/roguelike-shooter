@@ -30,27 +30,15 @@ public class DropManager : MonoBehaviour {
 
 	void spawnJellyDrop(Vector2 position) {
 		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
-		(float probabilty, ICollectible prefab)[] drops = new (float, ICollectible)[]{
-			(.6f, prefabs.getValuable<Coin>()),
-			(.04f, prefabs.getValuable<Ring>()),
-			(.04f, prefabs.getConsumable<Beef>())
-		};
+		DropTable jellyDrops = new DropTable(
+			(.6f, prefabs.getValuable<Coin>().gameObject),
+			(.04f, prefabs.getValuable<Ring>().gameObject),
+			(.04f, prefabs.getConsumable<Beef>().gameObject)
+		);
 
-		// To CDF
-		(float probabilty, ICollectible prefab)[] dropsCDF = drops;
-		for (int i = 0; i < drops.Length; i++) {
-			if (i == 0)
-				dropsCDF[i].probabilty = drops[i].probabilty;
-			else
-				dropsCDF[i].probabilty = drops[i].probabilty + dropsCDF[i - 1].probabilty;
-		}
-
-		float randomValue = Random.value;
-		foreach ((float probabilty, ICollectible prefab) dropEntry in dropsCDF) {
-			if (randomValue < dropEntry.probabilty) {
-				// objectPool.spawn(dropEntry.prefab, position);
-				break;
-			}
-		}
+		GameObject drop = jellyDrops.getRandomDrop();
+		if (drop is not null)
+			objectPool.spawn(drop, position);
 	}
 }
+
