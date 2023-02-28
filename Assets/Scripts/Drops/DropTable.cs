@@ -3,38 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 
 struct DropEntry {
-	float probabilty;
-	GameObject prefab;
+	internal float probability;
+	internal GameObject prefab;
 
-	public DropEntry(float probabilty, GameObject prefab) {
-		this.probabilty = probabilty;
+	public DropEntry(float probability, GameObject prefab) {
+		this.probability = probability;
 		this.prefab = prefab;
 	}
 }
 
 class DropTable {
-	(float probabilty, GameObject prefab)[] dropEntries;
+	DropEntry[] dropEntries;
 
-	public DropTable(params (float probabilty, GameObject prefab)[] dropEntries) {
+	public DropTable(params DropEntry[] dropEntries) {
 		this.dropEntries = dropEntries;
 	}
 
-	(float, GameObject)[] getDropEntriesAsCDF() {
-		(float probabilty, GameObject prefab)[] dropEntriesCDF = dropEntries;
-		dropEntriesCDF[0].probabilty = dropEntries[0].probabilty;
+	DropEntry[] getDropEntriesAsCDF() {
+		DropEntry[] dropEntriesCDF = dropEntries;
+		dropEntriesCDF[0].probability = dropEntries[0].probability;
 
 		for (int i = 1; i < dropEntries.Length; i++)
-			dropEntriesCDF[i].probabilty = dropEntries[i].probabilty + dropEntriesCDF[i - 1].probabilty;
+			dropEntriesCDF[i].probability = dropEntries[i].probability + dropEntriesCDF[i - 1].probability;
 
 		return dropEntriesCDF;
 	}
-	
+
 	public GameObject getRandomDrop() {
-		(float probabilty, GameObject prefab)[] dropEntriesCDF = getDropEntriesAsCDF();
+		DropEntry[] dropEntriesCDF = getDropEntriesAsCDF();
 
 		float randomValue = Random.value;
-		foreach ((float probabilty, GameObject prefab) dropEntry in dropEntriesCDF)
-			if (randomValue < dropEntry.probabilty)
+		foreach (DropEntry dropEntry in dropEntriesCDF)
+			if (randomValue < dropEntry.probability)
 				return dropEntry.prefab;
 
 		return null;

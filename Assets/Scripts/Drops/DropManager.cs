@@ -31,9 +31,9 @@ public class DropManager : MonoBehaviour {
 	void spawnJellyDrop(Vector2 position) {
 		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
 		DropTable jellyDrops = new DropTable(
-			(.6f, prefabs.getValuable<Coin>().gameObject),
-			(.04f, prefabs.getValuable<Ring>().gameObject),
-			(.04f, prefabs.getConsumable<Beef>().gameObject)
+			new DropEntry(.6f, prefabs.getValuable<Coin>().gameObject),
+			new DropEntry(.04f, prefabs.getValuable<Ring>().gameObject),
+			new DropEntry(.04f, prefabs.getConsumable<Beef>().gameObject)
 		);
 
 		GameObject drop = jellyDrops.getRandomDrop();
