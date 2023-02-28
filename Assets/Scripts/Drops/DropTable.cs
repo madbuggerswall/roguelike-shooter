@@ -19,16 +19,6 @@ class DropTable {
 		this.dropEntries = dropEntries;
 	}
 
-	DropEntry[] getDropEntriesAsCDF() {
-		DropEntry[] dropEntriesCDF = dropEntries;
-		dropEntriesCDF[0].probability = dropEntries[0].probability;
-
-		for (int i = 1; i < dropEntries.Length; i++)
-			dropEntriesCDF[i].probability = dropEntries[i].probability + dropEntriesCDF[i - 1].probability;
-
-		return dropEntriesCDF;
-	}
-
 	public GameObject getRandomDrop() {
 		DropEntry[] dropEntriesCDF = getDropEntriesAsCDF();
 
@@ -39,5 +29,24 @@ class DropTable {
 
 		return null;
 	}
+
+	DropEntry[] getDropEntriesAsCDF() {
+		DropEntry[] dropEntriesCDF = dropEntries;
+		dropEntriesCDF[0].probability = dropEntries[0].probability;
+
+		for (int i = 1; i < dropEntries.Length; i++)
+			dropEntriesCDF[i].probability = dropEntries[i].probability + dropEntriesCDF[i - 1].probability;
+
+		checkDropProbabilities(dropEntriesCDF);
+
+		return dropEntriesCDF;
+	}
+
+	void checkDropProbabilities(DropEntry[] dropEntriesCDF) {
+		foreach (DropEntry dropEntry in dropEntriesCDF)
+			if (dropEntry.probability > 1f)
+				throw new System.Exception("Drop probability cannot be greater that 1f");
+	}
+
 }
 

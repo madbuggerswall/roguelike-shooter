@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DropManager : MonoBehaviour {
+	DropTableContainer dropTableContainer;
 	ObjectPool objectPool;
 
 	void Awake() {
+		dropTableContainer = new DropTableContainer();
 		objectPool = GetComponentInChildren<ObjectPool>();
 	}
 
@@ -13,30 +15,11 @@ public class DropManager : MonoBehaviour {
 
 		// Drop a random weapon. Position of the weapon should be determined by Grid/Map class
 		objectPool.spawn(LevelManager.getInstance().getPrefabs().getWeapon<Sword>());
-		Events.getInstance().enemyBeaten.AddListener(onEnemyBeaten);
+		Events.getInstance().enemyBeaten.AddListener(spawnDrops);
 	}
 
-	void onEnemyBeaten(Enemy enemy, Vector2 position) {
-		switch (enemy) {
-			case Jelly:
-				spawnJellyDrop(position);
-				break;
-
-			default:
-				spawnJellyDrop(position);
-				break;
-		}
-	}
-
-	void spawnJellyDrop(Vector2 position) {
-		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
-		DropTable jellyDrops = new DropTable(
-			new DropEntry(.6f, prefabs.getValuable<Coin>().gameObject),
-			new DropEntry(.04f, prefabs.getValuable<Ring>().gameObject),
-			new DropEntry(.04f, prefabs.getConsumable<Beef>().gameObject)
-		);
-
-		GameObject drop = jellyDrops.getRandomDrop();
+	void spawnDrops(Enemy enemy, Vector2 position) {
+		GameObject drop = dropTableContainer.getDropTable(enemy).getRandomDrop();
 		if (drop is not null)
 			objectPool.spawn(drop, position);
 	}
