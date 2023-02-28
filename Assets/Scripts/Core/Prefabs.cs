@@ -12,21 +12,21 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] Brute brute;
 	[SerializeField] Wizard wizard;
 
-	[Header("Weapons")]
-	[SerializeField] Sword sword;
-	[SerializeField] Axe axe;
-	[SerializeField] Bow bow;
-
 	[Header("Projectiles")]
 	[SerializeField] SwordProjectile swordProjectile;
 	[SerializeField] AxeProjectile axeProjectile;
 	[SerializeField] Arrow arrow;
 
+	[Header("Collectibles")]
+	[Header("Weapons")]
+	[SerializeField] Sword sword;
+	[SerializeField] Axe axe;
+	[SerializeField] Bow bow;
+
 	[Header("Armors")]
 	[SerializeField] WoodShield woodShield;
 	[SerializeField] BodyArmor bodyArmor;
 
-	[Header("Collectibles")]
 	[Header("Consumables")]
 	[SerializeField] Beef beef;
 	[SerializeField] Potion potion;
@@ -42,13 +42,12 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] Bracelet bracelet;
 
 	[Header("Upgrades")]
-	[SerializeField] DamageUpgrade damageUpgrade;
-	[SerializeField] HealthUpgrade healthUpgrade;
-	[SerializeField] MagnetUpgrade magnetUpgrade;
-	[SerializeField] MovementUpgrade movementUpgrade;
-	[SerializeField] PeriodUpgrade periodUpgrade;
-	[SerializeField] RangeUpgrade rangeUpgrade;
-
+	[SerializeField] DamageBuff damageBuff;
+	[SerializeField] HealthBuff healthBuff;
+	[SerializeField] MagnetBuff magnetBuff;
+	[SerializeField] MovementBuff movementBuff;
+	[SerializeField] PeriodBuff periodBuff;
+	[SerializeField] RangeBuff rangeBuff;
 
 	void Awake() {
 
@@ -58,15 +57,16 @@ public class Prefabs : MonoBehaviour {
 		brute = GetComponentInChildren<Brute>(true);
 		wizard = GetComponentInChildren<Wizard>(true);
 
-		// Weapons, only DropManager spawns these
-		sword = GetComponentInChildren<Sword>(true);
-		axe = GetComponentInChildren<Axe>(true);
-		bow = GetComponentInChildren<Bow>(true);
-
 		// Projectiles, only Weapons spawns these
 		swordProjectile = GetComponentInChildren<SwordProjectile>(true);
 		axeProjectile = GetComponentInChildren<AxeProjectile>(true);
 		arrow = GetComponentInChildren<Arrow>(true);
+
+		// Collectibles, only DropManager spawns these
+		// Weapons, only DropManager spawns these
+		sword = GetComponentInChildren<Sword>(true);
+		axe = GetComponentInChildren<Axe>(true);
+		bow = GetComponentInChildren<Bow>(true);
 
 		// Armors, only DropManager spawns these
 		woodShield = GetComponentInChildren<WoodShield>(true);
@@ -87,12 +87,12 @@ public class Prefabs : MonoBehaviour {
 		bracelet = GetComponentInChildren<Bracelet>(true);
 
 		// Upgrades, only DropManager spawns these
-		damageUpgrade = GetComponentInChildren<DamageUpgrade>(true);
-		healthUpgrade = GetComponentInChildren<HealthUpgrade>(true);
-		magnetUpgrade = GetComponentInChildren<MagnetUpgrade>(true);
-		movementUpgrade = GetComponentInChildren<MovementUpgrade>(true);
-		periodUpgrade = GetComponentInChildren<PeriodUpgrade>(true);
-		rangeUpgrade = GetComponentInChildren<RangeUpgrade>(true);
+		damageBuff = GetComponentInChildren<DamageBuff>(true);
+		healthBuff = GetComponentInChildren<HealthBuff>(true);
+		magnetBuff = GetComponentInChildren<MagnetBuff>(true);
+		movementBuff = GetComponentInChildren<MovementBuff>(true);
+		periodBuff = GetComponentInChildren<PeriodBuff>(true);
+		rangeBuff = GetComponentInChildren<RangeBuff>(true);
 	}
 
 	// Enemy
@@ -162,16 +162,16 @@ public class Prefabs : MonoBehaviour {
 	}
 
 	// Upgrade
-	public Upgrade getUpgrade<T>() where T : Upgrade {
+	public Buff getBuff<T>() where T : Buff {
 		switch (true) {
-			case var _ when typeof(T) == typeof(DamageUpgrade): return damageUpgrade;
-			case var _ when typeof(T) == typeof(HealthUpgrade): return healthUpgrade;
-			case var _ when typeof(T) == typeof(MagnetUpgrade): return magnetUpgrade;
-			case var _ when typeof(T) == typeof(MovementUpgrade): return movementUpgrade;
-			case var _ when typeof(T) == typeof(PeriodUpgrade): return periodUpgrade;
-			case var _ when typeof(T) == typeof(RangeUpgrade): return rangeUpgrade;
+			case var _ when typeof(T) == typeof(DamageBuff): return damageBuff;
+			case var _ when typeof(T) == typeof(HealthBuff): return healthBuff;
+			case var _ when typeof(T) == typeof(MagnetBuff): return magnetBuff;
+			case var _ when typeof(T) == typeof(MovementBuff): return movementBuff;
+			case var _ when typeof(T) == typeof(PeriodBuff): return periodBuff;
+			case var _ when typeof(T) == typeof(RangeBuff): return rangeBuff;
 
-			default: return damageUpgrade;
+			default: return damageBuff;
 		}
 	}
 }

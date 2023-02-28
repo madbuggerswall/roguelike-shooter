@@ -3,28 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DropManager : MonoBehaviour {
-	//Consumables
-	Beef beef;
-	Potion potion;
-
-	// Containers
-	Chest chest;
-	Pot pot;
-	SmallPot smallPot;
-
-	// Valueables
-	Coin coin;
-	Ring ring;
-	Bracelet bracelet;
-
-	// Upgrades
-	DamageUpgrade damageUpgrade;
-	HealthUpgrade healthUpgrade;
-	MagnetUpgrade magnetUpgrade;
-	MovementUpgrade movementUpgrade;
-	PeriodUpgrade periodUpgrade;
-	RangeUpgrade rangeUpgrade;
-
 	ObjectPool objectPool;
 
 	void Awake() {

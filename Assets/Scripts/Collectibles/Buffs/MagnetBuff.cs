@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PeriodUpgrade : Upgrade {
+public class MagnetBuff : Buff {
 	public override void apply() {
 		throw new System.NotImplementedException();
 	}

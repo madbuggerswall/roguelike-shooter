@@ -10,7 +10,7 @@ public class Inventory : MonoBehaviour {
 	Weapon weapon;
 	Armor armor;
 
-	List<Upgrade> upgrades;
+	List<Buff> buffs;
 
 	[SerializeField] int coins;
 
@@ -29,8 +29,8 @@ public class Inventory : MonoBehaviour {
 			equip(collectible as Weapon);
 		if (collectible is Armor)
 			equip(collectible as Armor);
-		else if (collectible is Upgrade)
-			equip(collectible as Upgrade);
+		else if (collectible is Buff)
+			equip(collectible as Buff);
 		else if (collectible is Valuable)
 			earn(collectible as Valuable);
 		else if (collectible is Consumable)
@@ -53,9 +53,9 @@ public class Inventory : MonoBehaviour {
 		armor.onCollect();
 	}
 
-	void equip(Upgrade upgrade) {
-		upgrades.Add(upgrade);
-		upgrade.onCollect();
+	void equip(Buff buff) {
+		buffs.Add(buff);
+		buff.onCollect();
 	}
 
 	void earn(Valuable valuable) {
