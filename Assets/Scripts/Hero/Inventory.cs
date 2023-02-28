@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-interface ICollectible {
-	void onCollect();
+public abstract class Collectible : MonoBehaviour, IPoolable {
+	public abstract void reset();
+	public abstract void returnToPool();
+	public abstract void onCollect();
 }
 
 public class Inventory : MonoBehaviour {
@@ -18,13 +20,14 @@ public class Inventory : MonoBehaviour {
 
 	void Awake() {
 		attractedItems = new HashSet<Collider2D>();
+		buffs = new List<Buff>();
 	}
 
 	void Start() {
 		StartCoroutine(checkItemsAround(4f, 0.2f));
 	}
 
-	void collect(ICollectible collectible) {
+	void collect(Collectible collectible) {
 		if (collectible is Weapon)
 			equip(collectible as Weapon);
 		if (collectible is Armor)
@@ -102,7 +105,7 @@ public class Inventory : MonoBehaviour {
 
 		// Collect
 		if (distanceSqr < equipDistanceSqr) {
-			collect(item.GetComponent<ICollectible>());
+			collect(item.GetComponent<Collectible>());
 		}
 	}
 

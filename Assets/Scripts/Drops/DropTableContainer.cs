@@ -15,21 +15,34 @@ class DropTableContainer {
 		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
 
 		jellyDrops = new DropTable(
-		 new DropEntry(.6f, prefabs.getValuable<Coin>().gameObject),
-		 new DropEntry(.04f, prefabs.getValuable<Ring>().gameObject),
-		 new DropEntry(.04f, prefabs.getConsumable<Beef>().gameObject));
-
+			new DropEntry(.6f, prefabs.getValuable<Coin>()),
+			new DropEntry(.1f, prefabs.getValuable<Ring>()),
+			new DropEntry(.01f, prefabs.getValuable<Bracelet>()),
+			new DropEntry(.01f, prefabs.getConsumable<Beef>()),
+			new DropEntry(.01f, prefabs.getConsumable<Potion>()),
+			new DropEntry(.01f, prefabs.getArmor<WoodShield>()),
+			new DropEntry(.01f, prefabs.getRandomBuff()));
 
 		ghostDrops = new DropTable(
-			new DropEntry(.5f, prefabs.getValuable<Coin>().gameObject),
-			new DropEntry(.2f, prefabs.getValuable<Ring>().gameObject),
-			new DropEntry(.1f, prefabs.getValuable<Bracelet>().gameObject),
-			new DropEntry(.04f, prefabs.getConsumable<Beef>().gameObject),
-			new DropEntry(.04f, prefabs.getBuff<DamageBuff>().gameObject),
-			new DropEntry(.04f, prefabs.getBuff<RangeBuff>().gameObject),
-			new DropEntry(.04f, prefabs.getBuff<PeriodBuff>().gameObject),
-			new DropEntry(.04f, prefabs.getBuff<HealthBuff>().gameObject),
-			new DropEntry(.02f, prefabs.getConsumable<Potion>().gameObject));
+			new DropEntry(.5f, prefabs.getValuable<Coin>()),
+			new DropEntry(.2f, prefabs.getValuable<Ring>()),
+			new DropEntry(.1f, prefabs.getValuable<Bracelet>()),
+			new DropEntry(.05f, prefabs.getConsumable<Beef>()),
+			new DropEntry(.05f, prefabs.getConsumable<Potion>()),
+			new DropEntry(.01f, prefabs.getArmor<WoodShield>()),
+			new DropEntry(.01f, prefabs.getArmor<BodyArmor>()),
+			new DropEntry(.01f, prefabs.getRandomBuff()));
+
+		bruteDrops = new DropTable(
+			new DropEntry(.4f, prefabs.getValuable<Coin>()),
+			new DropEntry(.2f, prefabs.getValuable<Ring>()),
+			new DropEntry(.1f, prefabs.getValuable<Bracelet>()),
+			new DropEntry(.05f, prefabs.getConsumable<Beef>()),
+			new DropEntry(.05f, prefabs.getConsumable<Potion>()),
+			new DropEntry(.05f, prefabs.getArmor<WoodShield>()),
+			new DropEntry(.05f, prefabs.getArmor<BodyArmor>()),
+			new DropEntry(.05f, prefabs.getRandomBuff()));
+
 	}
 
 	public DropTable getDropTable(Enemy enemy) {

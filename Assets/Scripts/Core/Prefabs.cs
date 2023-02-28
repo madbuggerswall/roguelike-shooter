@@ -50,7 +50,7 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] RangeBuff rangeBuff;
 
 	void Awake() {
-
+/*
 		// Enemies, only EnemySpawner spawns these
 		jelly = GetComponentInChildren<Jelly>(true);
 		ghost = GetComponentInChildren<Ghost>(true);
@@ -92,7 +92,7 @@ public class Prefabs : MonoBehaviour {
 		magnetBuff = GetComponentInChildren<MagnetBuff>(true);
 		movementBuff = GetComponentInChildren<MovementBuff>(true);
 		periodBuff = GetComponentInChildren<PeriodBuff>(true);
-		rangeBuff = GetComponentInChildren<RangeBuff>(true);
+		rangeBuff = GetComponentInChildren<RangeBuff>(true); */
 	}
 
 	// Enemy
@@ -126,6 +126,16 @@ public class Prefabs : MonoBehaviour {
 			case var _ when typeof(T) == typeof(Arrow): return arrow;
 
 			default: return swordProjectile;
+		}
+	}
+
+	// Armor
+	public Armor getArmor<T>() where T : Armor {
+		switch (true) {
+			case var _ when typeof(T) == typeof(WoodShield): return woodShield;
+			case var _ when typeof(T) == typeof(BodyArmor): return bodyArmor;
+
+			default: return woodShield;
 		}
 	}
 
@@ -165,12 +175,24 @@ public class Prefabs : MonoBehaviour {
 	public Buff getBuff<T>() where T : Buff {
 		switch (true) {
 			case var _ when typeof(T) == typeof(DamageBuff): return damageBuff;
+			case var _ when typeof(T) == typeof(RangeBuff): return rangeBuff;
+			case var _ when typeof(T) == typeof(PeriodBuff): return periodBuff;
 			case var _ when typeof(T) == typeof(HealthBuff): return healthBuff;
 			case var _ when typeof(T) == typeof(MagnetBuff): return magnetBuff;
 			case var _ when typeof(T) == typeof(MovementBuff): return movementBuff;
-			case var _ when typeof(T) == typeof(PeriodBuff): return periodBuff;
-			case var _ when typeof(T) == typeof(RangeBuff): return rangeBuff;
 
+			default: return damageBuff;
+		}
+	}
+
+	public Buff getRandomBuff() {
+		switch (Random.Range(0, 6)) {
+			case 0: return damageBuff;
+			case 1: return rangeBuff;
+			case 2: return periodBuff;
+			case 3: return healthBuff;
+			case 4: return magnetBuff;
+			case 5: return movementBuff;
 			default: return damageBuff;
 		}
 	}

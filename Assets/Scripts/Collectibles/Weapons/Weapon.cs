@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
+public abstract class Weapon : Collectible {
 	// [SerializeField] protected float baseAttackRadius;
 	// [SerializeField] protected float baseAttackPeriod;
 	// [SerializeField] protected float baseProjectileSpeed;
@@ -16,15 +16,9 @@ public abstract class Weapon : MonoBehaviour, IPoolable, ICollectible {
 	// AudioClip onEquip
 	// ParticleSystem onEquip
 
-	// ICollectible
-	public void onCollect() {
-		// Equip sound
-		// Equip particles
-		gameObject.SetActive(false);
-	}
-
-	public void reset() { throw new System.NotImplementedException(); }
-	public void returnToPool() { throw new System.NotImplementedException(); }
+	public override void reset() { throw new System.NotImplementedException(); }
+	public override void returnToPool() { throw new System.NotImplementedException(); }
+	public override void onCollect() { gameObject.SetActive(false); }
 
 	// Getters
 	public float getAttackRadius() { return attackRadius; }

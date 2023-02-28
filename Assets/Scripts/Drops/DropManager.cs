@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DropManager : MonoBehaviour {
-	DropTableContainer dropTableContainer;
 	ObjectPool objectPool;
+	DropTableContainer dropTableContainer;
 
 	void Awake() {
-		dropTableContainer = new DropTableContainer();
 		objectPool = GetComponentInChildren<ObjectPool>();
+		dropTableContainer = new DropTableContainer();
 	}
 
 	void Start() {
@@ -19,7 +19,7 @@ public class DropManager : MonoBehaviour {
 	}
 
 	void spawnDrops(Enemy enemy, Vector2 position) {
-		GameObject drop = dropTableContainer.getDropTable(enemy).getRandomDrop();
+		Collectible drop = dropTableContainer.getDropTable(enemy).getRandomDrop();
 		if (drop is not null)
 			objectPool.spawn(drop, position);
 	}

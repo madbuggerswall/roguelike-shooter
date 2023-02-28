@@ -4,9 +4,9 @@ using UnityEngine;
 
 struct DropEntry {
 	internal float probability;
-	internal GameObject prefab;
+	internal Collectible prefab;
 
-	public DropEntry(float probability, GameObject prefab) {
+	public DropEntry(float probability, Collectible prefab) {
 		this.probability = probability;
 		this.prefab = prefab;
 	}
@@ -14,14 +14,14 @@ struct DropEntry {
 
 class DropTable {
 	DropEntry[] dropEntries;
+	DropEntry[] dropEntriesCDF;
 
 	public DropTable(params DropEntry[] dropEntries) {
 		this.dropEntries = dropEntries;
+		this.dropEntriesCDF = getDropEntriesAsCDF();
 	}
 
-	public GameObject getRandomDrop() {
-		DropEntry[] dropEntriesCDF = getDropEntriesAsCDF();
-
+	public Collectible getRandomDrop() {
 		float randomValue = Random.value;
 		foreach (DropEntry dropEntry in dropEntriesCDF)
 			if (randomValue < dropEntry.probability)
