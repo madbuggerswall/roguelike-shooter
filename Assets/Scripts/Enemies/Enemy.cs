@@ -50,6 +50,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		health = maxHealth;
 		flashEffect.enabled = false;
 		exclamation.enabled = false;
+		circleCollider.enabled = true;
 		transform.localScale = initialScale;
 		updateHealthBar(health, maxHealth);
 		StartCoroutine(chaseAndAttack());
@@ -60,32 +61,34 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		gameObject.SetActive(false);
 	}
 
-	// TODO This deforms the enemy and causes weird behavior when player attack period is low.
-	// Current damage behavior should caused by axe, because it stuns the enemy (knockback)
-	public void takeDamage(int damage) {
-		if (health <= 0)
-			return;
+	// Behavior/Strategy
+	protected abstract IEnumerator chaseAndAttack();
 
+
+	// TODO Damage effects duration determined by damage or projectile (Axe: 0.5f, Sword 0.25f, Arrow 0.1f)
+	public void takeDamage(int damage) {
 		health -= damage;
-		StopAllCoroutines();
-		StartCoroutine(damageEffects(0.2f));
 		updateHealthBar(health, maxHealth);
+		StopAllCoroutines();
+		StartCoroutine(damageEffects(0.3f, 0.2f));
 
 		if (health <= 0) {
 			// Stop and die
-			stride(0);
+			circleCollider.enabled = false;
 			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
-			LevelManager.getInstance().getParticles().spawnParticles(this, transform.position);
 			Events.getInstance().enemyBeaten.Invoke(this, transform.position);
 		}
 	}
 
-	IEnumerator damageEffects(float duration) {
+	IEnumerator damageEffects(float duration, float cooldown) {
+		stride(0);
+		exclamation.enabled = false;
+
 		StartCoroutine(flash(duration));
 		StartCoroutine(wobble(duration));
 		StartCoroutine(knockback(duration));
-		yield return new WaitForSeconds(duration);
+		yield return new WaitForSeconds(duration + cooldown);
 		StartCoroutine(chaseAndAttack());
 	}
 
@@ -111,13 +114,11 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		return direction;
 	}
 
-	// Wall aware movement
 	void moveAlongDirection(Vector2 direction, float speed) {
 		direction = checkForWallsAlongDirection(direction);
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
-	// Wall aware movement
 	void moveToPosition(Vector2 position) {
 		Vector2 direction = position - rigidBody.position;
 		direction = checkForWallsAlongDirection(direction);
@@ -134,7 +135,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	Vector2 getPushDirection(List<Collider2D> enemiesAround) {
 		Vector2 pushDirection = Vector2.zero;
-		
+
 		foreach (Collider2D enemy in enemiesAround) {
 			if (enemy == circleCollider)
 				continue;
@@ -149,15 +150,13 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 	IEnumerator calculateDirectionPeriodically(Transform target, float period) {
-		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
-
 		// OverlapCircle boilerplate
 		float radius = 1f;
 		ContactFilter2D contactFilter = new ContactFilter2D();
-		contactFilter.SetLayerMask(LayerMask.GetMask("Enemy"));
+		contactFilter.SetLayerMask(Layers.enemyMask);
 		List<Collider2D> enemiesAround = new List<Collider2D>();
 
-		while (!inRadius(rigidBody.position, target.position, attackRadius)) {
+		while (true) {
 			movementDir = ((Vector2) target.position - rigidBody.position).normalized;
 
 			// Avoid overlap
@@ -168,43 +167,24 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		}
 	}
 
-	IEnumerator moveTowards(Transform target) {
-		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
 
-		while (!inRadius(rigidBody.position, target.position, attackRadius)) {
+	// Behaviors
+	protected IEnumerator chase(Transform target) {
+		System.Func<Vector2, Vector2, float, bool> inRadius = (a, b, r) => (a - b).SqrMagnitude() <= r * r;
+		Coroutine calculateDirection = StartCoroutine(calculateDirectionPeriodically(target, 0.1f));
+
+		while (!inRadius(target.position, rigidBody.position, attackRadius)) {
 			moveAlongDirection(movementDir, movementSpeed);
 			stride(movementSpeed);
 			yield return new WaitForFixedUpdate();
 		}
+
+		StopCoroutine(calculateDirection);
+		stride(0);
 	}
-
-	// Behavior/Strategy
-	IEnumerator chaseAndAttack() {
-		Transform target = LevelManager.getInstance().getHero().transform;
-
-		// While player is alive/not beaten
-		while (true) {
-			// Chase
-			StartCoroutine(calculateDirectionPeriodically(target, 0.1f));
-			yield return moveTowards(target);
-			stride(0);
-
-			// Notice
-			Events.getInstance().playerNoticed.Invoke();
-			yield return notice(0.2f);
-			// yield return new WaitForSeconds(0.5f);
-
-			// // Attack
-			// yield return melee(target, 0.5f, 1f);
-			yield return melee(target, 0.5f);
-			yield return new WaitForSeconds(0.5f);
-		}
-	}
-
 
 	// Attack
-	IEnumerator dash(Transform target, float duration) {
-		float distance = 4;
+	protected IEnumerator dash(Transform target, float duration, float distance) {
 		float speed = distance / duration;
 		float drag = speed;
 
@@ -213,27 +193,27 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 		Vector2 targetPosition = rigidBody.position + direction * distance;
 
 		for (float time = 0; time <= duration; time += Time.fixedDeltaTime) {
-			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, Tween.easeOutSine(time, duration));
+			Vector2 position = Vector2.Lerp(initialPosition, targetPosition, Tween.easeOutCubic(time, duration));
 			moveToPosition(position);
 			yield return new WaitForFixedUpdate();
 		}
 	}
 
-	IEnumerator melee(Transform target, float duration) {
+	protected IEnumerator melee(Transform target, float duration, float distance) {
 		Vector2 initialPosition = rigidBody.position;
 		Vector2 direction = (target.position - transform.position).normalized;
 
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			moveToPosition(initialPosition + direction * Mathf.Sin(Mathf.PI * Tween.easeOutQuad(time, duration)));
+			moveToPosition(initialPosition + distance * direction * Mathf.Sin(Mathf.PI * Tween.easeOutQuad(time, duration)));
 			yield return new WaitForFixedUpdate();
 		}
 	}
 
-	// Reactions
+	// Reactions | Effects
 	IEnumerator knockback(float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			moveToPosition(initialPosition + Vector2.up * duration * Mathf.Sin(Mathf.PI / duration * time));
+			moveToPosition(initialPosition + Vector2.up * duration * Mathf.Sin(Mathf.PI * time / duration));
 			yield return new WaitForFixedUpdate();
 		}
 	}
@@ -241,23 +221,24 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	IEnumerator die(float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI / duration * time));
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI * time / duration));
 			rigidBody.MoveRotation(time / duration * 90);
 			yield return new WaitForFixedUpdate();
 		}
 
 		// Events.getInstance().enemyBeaten.Invoke(getEnemyType());
-		gameObject.SetActive(false);
+		returnToPool();
 	}
 
-	IEnumerator notice(float duration) {
-		float jumpHeight = duration;
+	protected IEnumerator notice(float duration) {
+		LevelManager.getInstance().getSoundManager().playHeroNoticed();
 
+		float jumpHeight = duration;
 		exclamation.enabled = true;
 
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			moveToPosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI / duration * time));
+			moveToPosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI * time / duration));
 			yield return new WaitForFixedUpdate();
 		}
 
@@ -272,15 +253,18 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 	IEnumerator wobble(float duration) {
-		float frequency = 20f;
+		float frequency = 10f;
 		float amount = 0.1f;
 
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
-			float scale = Mathf.Sin(Mathf.PI * frequency * time / duration) * amount;
+			float scale = Mathf.Sin(Mathf.PI * frequency * Tween.easeOutSine(time, duration)) * amount;
 			transform.localScale = initialScale + Vector2.one * scale;
 			yield return new WaitForFixedUpdate();
 		}
 
 		transform.localScale = initialScale;
 	}
+
+	// Getters
+	public int getDamage() { return damage; }
 }
