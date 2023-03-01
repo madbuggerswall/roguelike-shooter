@@ -5,7 +5,6 @@ class Events {
 	static Events instance;
 
 	public UnityEvent<Collision2D> playerHit;
-	public UnityEvent playerNoticed;
 
 	public UnityEvent projectileThrown;
 
@@ -16,7 +15,6 @@ class Events {
 
 	Events() {
 		playerHit = new UnityEvent<Collision2D>();
-		playerNoticed = new UnityEvent();
 
 		projectileThrown = new UnityEvent();
 

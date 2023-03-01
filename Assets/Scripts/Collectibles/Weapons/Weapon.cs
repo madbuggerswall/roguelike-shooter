@@ -18,7 +18,9 @@ public abstract class Weapon : Collectible {
 
 	public override void reset() { throw new System.NotImplementedException(); }
 	public override void returnToPool() { throw new System.NotImplementedException(); }
-	public override void onCollect() { gameObject.SetActive(false); }
+	public override void onCollect() {
+		// gameObject.SetActive(false);
+	}
 
 	// Getters
 	public float getAttackRadius() { return attackRadius; }

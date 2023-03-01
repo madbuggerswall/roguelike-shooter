@@ -16,12 +16,14 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] SwordProjectile swordProjectile;
 	[SerializeField] AxeProjectile axeProjectile;
 	[SerializeField] Arrow arrow;
+	[SerializeField] Fire fire;
 
 	[Header("Collectibles")]
 	[Header("Weapons")]
 	[SerializeField] Sword sword;
 	[SerializeField] Axe axe;
 	[SerializeField] Bow bow;
+	[SerializeField] Scepter scepter;
 
 	[Header("Armors")]
 	[SerializeField] WoodShield woodShield;
@@ -50,49 +52,49 @@ public class Prefabs : MonoBehaviour {
 	[SerializeField] RangeBuff rangeBuff;
 
 	void Awake() {
-/*
-		// Enemies, only EnemySpawner spawns these
-		jelly = GetComponentInChildren<Jelly>(true);
-		ghost = GetComponentInChildren<Ghost>(true);
-		brute = GetComponentInChildren<Brute>(true);
-		wizard = GetComponentInChildren<Wizard>(true);
+		/*
+				// Enemies, only EnemySpawner spawns these
+				jelly = GetComponentInChildren<Jelly>(true);
+				ghost = GetComponentInChildren<Ghost>(true);
+				brute = GetComponentInChildren<Brute>(true);
+				wizard = GetComponentInChildren<Wizard>(true);
 
-		// Projectiles, only Weapons spawns these
-		swordProjectile = GetComponentInChildren<SwordProjectile>(true);
-		axeProjectile = GetComponentInChildren<AxeProjectile>(true);
-		arrow = GetComponentInChildren<Arrow>(true);
+				// Projectiles, only Weapons spawns these
+				swordProjectile = GetComponentInChildren<SwordProjectile>(true);
+				axeProjectile = GetComponentInChildren<AxeProjectile>(true);
+				arrow = GetComponentInChildren<Arrow>(true);
 
-		// Collectibles, only DropManager spawns these
-		// Weapons, only DropManager spawns these
-		sword = GetComponentInChildren<Sword>(true);
-		axe = GetComponentInChildren<Axe>(true);
-		bow = GetComponentInChildren<Bow>(true);
+				// Collectibles, only DropManager spawns these
+				// Weapons, only DropManager spawns these
+				sword = GetComponentInChildren<Sword>(true);
+				axe = GetComponentInChildren<Axe>(true);
+				bow = GetComponentInChildren<Bow>(true);
 
-		// Armors, only DropManager spawns these
-		woodShield = GetComponentInChildren<WoodShield>(true);
-		bodyArmor = GetComponentInChildren<BodyArmor>(true);
+				// Armors, only DropManager spawns these
+				woodShield = GetComponentInChildren<WoodShield>(true);
+				bodyArmor = GetComponentInChildren<BodyArmor>(true);
 
-		// Consumables, only DropManager spawns these
-		beef = GetComponentInChildren<Beef>(true);
-		potion = GetComponentInChildren<Potion>(true);
+				// Consumables, only DropManager spawns these
+				beef = GetComponentInChildren<Beef>(true);
+				potion = GetComponentInChildren<Potion>(true);
 
-		// Containers, only DropManager spawns these
-		chest = GetComponentInChildren<Chest>(true);
-		pot = GetComponentInChildren<Pot>(true);
-		smallPot = GetComponentInChildren<SmallPot>(true);
+				// Containers, only DropManager spawns these
+				chest = GetComponentInChildren<Chest>(true);
+				pot = GetComponentInChildren<Pot>(true);
+				smallPot = GetComponentInChildren<SmallPot>(true);
 
-		// Valuables, only DropManager spawns these
-		coin = GetComponentInChildren<Coin>(true);
-		ring = GetComponentInChildren<Ring>(true);
-		bracelet = GetComponentInChildren<Bracelet>(true);
+				// Valuables, only DropManager spawns these
+				coin = GetComponentInChildren<Coin>(true);
+				ring = GetComponentInChildren<Ring>(true);
+				bracelet = GetComponentInChildren<Bracelet>(true);
 
-		// Upgrades, only DropManager spawns these
-		damageBuff = GetComponentInChildren<DamageBuff>(true);
-		healthBuff = GetComponentInChildren<HealthBuff>(true);
-		magnetBuff = GetComponentInChildren<MagnetBuff>(true);
-		movementBuff = GetComponentInChildren<MovementBuff>(true);
-		periodBuff = GetComponentInChildren<PeriodBuff>(true);
-		rangeBuff = GetComponentInChildren<RangeBuff>(true); */
+				// Upgrades, only DropManager spawns these
+				damageBuff = GetComponentInChildren<DamageBuff>(true);
+				healthBuff = GetComponentInChildren<HealthBuff>(true);
+				magnetBuff = GetComponentInChildren<MagnetBuff>(true);
+				movementBuff = GetComponentInChildren<MovementBuff>(true);
+				periodBuff = GetComponentInChildren<PeriodBuff>(true);
+				rangeBuff = GetComponentInChildren<RangeBuff>(true); */
 	}
 
 	// Enemy
@@ -113,6 +115,7 @@ public class Prefabs : MonoBehaviour {
 			case var _ when typeof(T) == typeof(Sword): return sword;
 			case var _ when typeof(T) == typeof(Axe): return axe;
 			case var _ when typeof(T) == typeof(Bow): return bow;
+			case var _ when typeof(T) == typeof(Scepter): return scepter;
 
 			default: return sword;
 		}
@@ -124,6 +127,7 @@ public class Prefabs : MonoBehaviour {
 			case var _ when typeof(T) == typeof(SwordProjectile): return swordProjectile;
 			case var _ when typeof(T) == typeof(AxeProjectile): return axeProjectile;
 			case var _ when typeof(T) == typeof(Arrow): return arrow;
+			case var _ when typeof(T) == typeof(Fire): return fire;
 
 			default: return swordProjectile;
 		}

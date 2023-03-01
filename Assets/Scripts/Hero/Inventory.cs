@@ -2,25 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Collectible : MonoBehaviour, IPoolable {
-	public abstract void reset();
-	public abstract void returnToPool();
-	public abstract void onCollect();
-}
-
 public class Inventory : MonoBehaviour {
+	int coinAmount;
+
 	Weapon weapon;
 	Armor armor;
-
 	List<Buff> buffs;
 
-	[SerializeField] int coins;
-
 	HashSet<Collider2D> attractedItems;
+	InventoryUI inventoryUI;
 
 	void Awake() {
 		attractedItems = new HashSet<Collider2D>();
 		buffs = new List<Buff>();
+		inventoryUI = FindObjectOfType<InventoryUI>();
 	}
 
 	void Start() {
@@ -42,7 +37,8 @@ public class Inventory : MonoBehaviour {
 
 	void equip(Weapon weapon) {
 		this.weapon = weapon;
-		this.weapon.transform.SetParent(transform);
+		// TODO
+		this.weapon.transform.SetParent(FindObjectOfType<InventoryUI>().getWeaponSlot());
 		this.weapon.transform.localPosition = Vector2.zero;
 
 		weapon.onCollect();
@@ -62,7 +58,8 @@ public class Inventory : MonoBehaviour {
 	}
 
 	void earn(Valuable valuable) {
-		coins += valuable.getCoinValue();
+		coinAmount += valuable.getCoinValue();
+		inventoryUI.updateCoinAmount(coinAmount);
 		valuable.onCollect();
 	}
 

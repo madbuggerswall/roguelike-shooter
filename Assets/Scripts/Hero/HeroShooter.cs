@@ -55,7 +55,7 @@ public class HeroShooter : MonoBehaviour {
 	}
 
 	// Spawn and throw a projectile, setting its target and damage value
-	protected void throwProjectile(Transform target, Weapon weapon) {
+	void throwProjectile(Transform target, Weapon weapon) {
 		ObjectPool objectPool = ProjectileContainer.getInstance().GetComponentInChildren<ObjectPool>();
 		Projectile projectile = objectPool.spawn(weapon.getProjectilePrefab(), transform.position);
 		projectile.throwAtTarget(target, weapon.getProjectileDamage(), weapon.getProjectileSpeed());

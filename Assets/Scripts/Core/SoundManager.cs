@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour {
 	[SerializeField] AudioSource playerHit;
-	[SerializeField] AudioSource playerNoticed;
+	[SerializeField] AudioSource heroNoticed;
 	[SerializeField] AudioSource enemyHit;
 	[SerializeField] AudioSource projectileThrown;
 
@@ -13,7 +13,6 @@ public class SoundManager : MonoBehaviour {
 
 	void Start() {
 		Events.getInstance().playerHit.AddListener(delegate { playAudioSource(playerHit); });
-		Events.getInstance().playerNoticed.AddListener(delegate { playAudioSource(playerNoticed); });
 		Events.getInstance().enemyHit.AddListener(delegate { playAudioSource(enemyHit); });
 		Events.getInstance().projectileThrown.AddListener(delegate { playAudioSource(projectileThrown); });
 	}
@@ -26,4 +25,5 @@ public class SoundManager : MonoBehaviour {
 
 	// Inventory
 	public void playCoinCollected() { playAudioSource(coinCollected); }
+	public void playHeroNoticed() { playAudioSource(heroNoticed); }
 }

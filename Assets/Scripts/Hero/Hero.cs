@@ -6,9 +6,10 @@ using UnityEngine.Events;
 // Health and attack properties
 // Rename this class to Hero
 public class Hero : MonoBehaviour {
-
-	// Migrate te JuiceEffects
 	[SerializeField] SpriteRenderer flashEffect;
+
+	[SerializeField] int health;
+	[SerializeField] int maxHealth;
 
 	[SerializeField] float movementSpeed = 4f;
 	Vector2 movementDir;
@@ -18,6 +19,7 @@ public class Hero : MonoBehaviour {
 	CircleCollider2D circleCollider;
 	HeroInput playerInput;
 
+	// MonoBehavior
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
@@ -30,7 +32,12 @@ public class Hero : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D other) {
 		if (other.gameObject.layer == Layers.enemy) {
-			StartCoroutine(takeDamage(other, 0.5f));
+			int damage = other.gameObject.GetComponent<Enemy>().getDamage();
+			StartCoroutine(takeDamage(damage, 0.5f, other.transform.position));
+			Events.getInstance().playerHit.Invoke(other);
+		} else if (other.gameObject.layer == Layers.enemyProjectile) {
+			int damage = other.gameObject.GetComponent<Projectile>().getDamage();
+			StartCoroutine(takeDamage(damage, 0.5f, other.transform.position));
 			Events.getInstance().playerHit.Invoke(other);
 		}
 	}
@@ -43,26 +50,26 @@ public class Hero : MonoBehaviour {
 		movementAction();
 	}
 
+
+	// Movement
 	void move() {
 		moveAlongDirection(movementDir.normalized, movementSpeed);
 		stride();
 	}
 
 
-	// Wall aware movement
+	// Movement utilties
 	void moveAlongDirection(Vector2 direction, float speed) {
 		direction = checkForWallsAlongDirection(direction);
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
-	// Wall aware movement
 	void moveToPosition(Vector2 position) {
 		Vector2 direction = position - rigidBody.position;
 		direction = checkForWallsAlongDirection(direction);
 		rigidBody.MovePosition(rigidBody.position + direction);
 	}
 
-	// TODO Borrow this function from Enemy class
 	Vector2 checkForWallsAlongDirection(Vector2 direction) {
 		Vector2 verticalPosition = rigidBody.position + Vector2.up * Mathf.Sign(direction.y);
 		Vector2 horizontalPosition = rigidBody.position + Vector2.right * Mathf.Sign(direction.x);
@@ -78,7 +85,8 @@ public class Hero : MonoBehaviour {
 		return direction;
 	}
 
-	// Strut, walk animation
+
+	// Reactions | Effects
 	void stride() {
 		const float angleRange = 16;
 		const float freqMul = 4;
@@ -87,10 +95,10 @@ public class Hero : MonoBehaviour {
 		rigidBody.MoveRotation(angleRange * Mathf.Sin(freqMul * movementSpeed * movement * Time.time));
 	}
 
-	IEnumerator knockback(Collision2D collision, float duration) {
+	IEnumerator knockback(Vector2 collisionPos, float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		float horizontalDistance = 2f;
-		float horizontalTarget = horizontalDistance * Mathf.Sign(rigidBody.position.x - collision.rigidbody.position.x);
+		float horizontalTarget = horizontalDistance * Mathf.Sign(rigidBody.position.x - collisionPos.x);
 
 		for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += Time.fixedDeltaTime) {
 			Vector2 vertical = Vector2.up * Mathf.Sin(Mathf.PI * elapsedTime / duration);
@@ -100,14 +108,16 @@ public class Hero : MonoBehaviour {
 		}
 	}
 
-	IEnumerator takeDamage(Collision2D collision, float duration) {
+	IEnumerator takeDamage(int damage, float duration, Vector2 collisionPos) {
+		health -= damage;
+
+		// Damage Effect
 		movementAction = delegate { };
 		circleCollider.enabled = false;
 
-		// Damage Effect
 		StartCoroutine(flash(duration));
 		StartCoroutine(wobble(duration));
-		StartCoroutine(knockback(collision, duration));
+		StartCoroutine(knockback(collisionPos, duration));
 
 		yield return new WaitForSeconds(duration);
 		movementAction = move;
@@ -117,6 +127,7 @@ public class Hero : MonoBehaviour {
 		yield return new WaitForSeconds(0.5f);
 		circleCollider.enabled = true;
 	}
+
 
 	// Juice effects
 	IEnumerator flash(float duration) {
@@ -146,4 +157,9 @@ public class Hero : MonoBehaviour {
 
 		transform.localScale = initialScale;
 	}
+
+
+	// Getters
+	public int getHealth() { return health; }
+	public int getMaxHealth() { return maxHealth; }
 }

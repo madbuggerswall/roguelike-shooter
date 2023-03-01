@@ -13,6 +13,10 @@ public class Particles : MonoBehaviour {
 		objectPool = GetComponentInChildren<ObjectPool>();
 	}
 
+	void Start() {
+		Events.getInstance().enemyBeaten.AddListener(spawnParticles);
+	}
+
 	public void spawnParticles(Enemy enemy, Vector2 position) {
 		objectPool.spawn(getParticles(enemy), position);
 	}

@@ -4,12 +4,12 @@ using UnityEngine;
 
 // IPoolable
 public abstract class Projectile : MonoBehaviour {
-	[SerializeField] int damage = 10;
 	[SerializeField] float speed = 8f;
-	[SerializeField] Vector2 direction;
-
 	[SerializeField] float offsetAngle;
 
+	int damage = 8;
+
+	Vector2 direction;
 	Rigidbody2D rigidBody;
 
 	void Awake() {
@@ -43,7 +43,7 @@ public abstract class Projectile : MonoBehaviour {
 
 	// Atan solution
 	void lookAtDirection(Vector2 direction) {
-		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + offsetAngle;
+		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - offsetAngle;
 		transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 	}
 
