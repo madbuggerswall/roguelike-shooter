@@ -38,6 +38,5 @@ public class Wizard : Enemy {
 		Projectile projectile = objectPool.spawn(weapon.getProjectilePrefab(), transform.position);
 		projectile.gameObject.layer = Layers.enemyProjectile;
 		projectile.throwAtTarget(target, weapon.getProjectileDamage(), weapon.getProjectileSpeed());
-		Events.getInstance().projectileThrown.Invoke();
 	}
 }

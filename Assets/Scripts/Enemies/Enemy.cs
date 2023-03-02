@@ -14,7 +14,7 @@ using UnityEngine.Events;
 // Boss?
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
-public abstract class Enemy : MonoBehaviour, IPoolable {
+public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 	[SerializeField] SpriteRenderer flashEffect;
 	[SerializeField] SpriteRenderer exclamation;
 	[SerializeField] SpriteRenderer healthBar;
@@ -22,6 +22,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	[SerializeField] protected int maxHealth;
 	[SerializeField] protected int health;
 	[SerializeField] protected int damage;
+	[SerializeField] protected float damageDuration;
 	[SerializeField] protected float attackRadius;
 	[SerializeField] protected float movementSpeed;
 
@@ -47,6 +48,14 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 	void OnDisable() {
 		reset();
+	}
+
+	void OnCollisionEnter2D(Collision2D other) {
+		if (other.gameObject.layer == Layers.hero) {
+			other.gameObject.GetComponent<IDamageable>().takeDamage(this);
+			// LevelManager.getInstance().getParticles().spawnParticles(this, rigidBody.position);
+			LevelManager.getInstance().getCameraImpulse().impulse(other);
+		}
 	}
 
 	// Behavior | Strategy
@@ -124,7 +133,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 			yield return new WaitForFixedUpdate();
 		}
 
-		// Events.getInstance().enemyBeaten.Invoke(getEnemyType());
 		returnToPool();
 	}
 
@@ -207,18 +215,19 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 
 
 	// Damage Operations, takeDamage should be IDamagable.takeDamage()
-	public void takeDamage(int damage) {
-		health -= damage;
+	public void takeDamage(IDamager damager) {
+		const float damageCooldown = 0.1f;
+		health -= damager.getDamage();
 		updateHealthBar(health, maxHealth);
-		StopAllCoroutines();
-		StartCoroutine(damageEffects(0.3f, 0.1f));
 
-		if (health <= 0) {
-			// Stop and die
+		if (health > 0) {
+			StopAllCoroutines();
+			StartCoroutine(damageEffects(damager.getDuration(), damageCooldown));
+		} else {
 			circleCollider.enabled = false;
 			StopAllCoroutines();
 			StartCoroutine(die(0.5f));
-			Events.getInstance().enemyBeaten.Invoke(this, transform.position);
+			Events.getInstance().enemyBeaten.Invoke(this);
 		}
 	}
 
@@ -259,6 +268,12 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	}
 
 
+	// IDamager
+	public void dealDamage(IDamageable damageable) { damageable.takeDamage(this); }
+	public int getDamage() { return damage; }
+	public float getDuration() { return damageDuration; }
+	public Vector2 getPosition() { return transform.position; }
+
 	// IPoolable
 	public void reset() {
 		health = maxHealth;
@@ -272,8 +287,4 @@ public abstract class Enemy : MonoBehaviour, IPoolable {
 	public void returnToPool() {
 		gameObject.SetActive(false);
 	}
-
-
-	// Getters
-	public int getDamage() { return damage; }
 }

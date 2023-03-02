@@ -17,8 +17,8 @@ public class Particles : MonoBehaviour {
 		Events.getInstance().enemyBeaten.AddListener(spawnParticles);
 	}
 
-	public void spawnParticles(Enemy enemy, Vector2 position) {
-		objectPool.spawn(getParticles(enemy), position);
+	public void spawnParticles(Enemy enemy) {
+		objectPool.spawn(getParticles(enemy), enemy.transform.position);
 	}
 
 	public void spawnParticles(Projectile projectile, Vector2 position) {

@@ -13,19 +13,13 @@ public class CameraImpulse : MonoBehaviour {
 		impulseSource = GetComponent<CinemachineImpulseSource>();
 	}
 
-	void Start() {
-		Events.getInstance().enemyHit.AddListener(cameraImpulse);
-		Events.getInstance().playerHit.AddListener(cameraImpulse);
-	}
-
-
-	public void cameraImpulse(Vector2 direction) {
+	public void impulse(Vector2 direction) {
 		direction.Normalize();
 		impulseSource.GenerateImpulseWithVelocity(direction * magnitude);
 	}
 
-	void cameraImpulse(Collision2D collision) {
+	public void impulse(Collision2D collision) {
 		Vector2 direction = (collision.collider.transform.position - collision.otherCollider.transform.position).normalized;
-		cameraImpulse(direction);
+		impulse(direction);
 	}
 }

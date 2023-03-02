@@ -12,9 +12,9 @@ public class SoundManager : MonoBehaviour {
 	[SerializeField] AudioSource coinCollected;
 
 	void Start() {
-		Events.getInstance().playerHit.AddListener(delegate { playAudioSource(playerHit); });
-		Events.getInstance().enemyHit.AddListener(delegate { playAudioSource(enemyHit); });
-		Events.getInstance().projectileThrown.AddListener(delegate { playAudioSource(projectileThrown); });
+		// Events.getInstance().playerHit.AddListener(delegate { playAudioSource(playerHit); });
+		// Events.getInstance().enemyHit.AddListener(delegate { playAudioSource(enemyHit); });
+		// Events.getInstance().projectileThrown.AddListener(delegate { playAudioSource(projectileThrown); });
 	}
 
 	// Randomize pitch slightly in every play

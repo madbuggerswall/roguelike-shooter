@@ -18,10 +18,10 @@ public class DropManager : MonoBehaviour {
 		Events.getInstance().enemyBeaten.AddListener(spawnDrops);
 	}
 
-	void spawnDrops(Enemy enemy, Vector2 position) {
+	void spawnDrops(Enemy enemy) {
 		Collectible drop = dropTableContainer.getDropTable(enemy).getRandomDrop();
 		if (drop is not null)
-			objectPool.spawn(drop, position);
+			objectPool.spawn(drop, enemy.transform.position);
 	}
 }
 

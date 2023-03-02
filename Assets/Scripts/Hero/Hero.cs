@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-// Health and attack properties
-// Rename this class to Hero
-public class Hero : MonoBehaviour {
+public interface IDamageable {
+	void takeDamage(IDamager damager);
+}
+
+public class Hero : MonoBehaviour, IDamageable {
 	[SerializeField] SpriteRenderer flashEffect;
 
 	[SerializeField] int health;
@@ -19,27 +21,19 @@ public class Hero : MonoBehaviour {
 	CircleCollider2D circleCollider;
 	HeroInput playerInput;
 
+	// Remove this
+	HealthBarUI healthBarUI;
+
 	// MonoBehavior
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
 		playerInput = GetComponent<HeroInput>();
+		healthBarUI = FindObjectOfType<HealthBarUI>();
 	}
 
 	void Start() {
 		movementAction = move;
-	}
-
-	void OnCollisionEnter2D(Collision2D other) {
-		if (other.gameObject.layer == Layers.enemy) {
-			int damage = other.gameObject.GetComponent<Enemy>().getDamage();
-			StartCoroutine(takeDamage(damage, 0.5f, other.transform.position));
-			Events.getInstance().playerHit.Invoke(other);
-		} else if (other.gameObject.layer == Layers.enemyProjectile) {
-			int damage = other.gameObject.GetComponent<Projectile>().getDamage();
-			StartCoroutine(takeDamage(damage, 0.5f, other.transform.position));
-			Events.getInstance().playerHit.Invoke(other);
-		}
 	}
 
 	void Update() {
@@ -108,24 +102,51 @@ public class Hero : MonoBehaviour {
 		}
 	}
 
-	IEnumerator takeDamage(int damage, float duration, Vector2 collisionPos) {
-		health -= damage;
+	IEnumerator die(float duration) {
+		Vector2 initialPosition = rigidBody.position;
+		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
+			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI * time / duration));
+			rigidBody.MoveRotation(time / duration * 90);
+			yield return new WaitForFixedUpdate();
+		}
+	}
 
-		// Damage Effect
+
+	// IDamageable and damage effects
+	public void takeDamage(IDamager damager) {
+		health -= damager.getDamage();
+		healthBarUI.updateHealthBar(health, maxHealth);
+
+		if (health > 0) {
+			StartCoroutine(onHeroDamage(damager));
+		} else {
+			// Stop and die
+			movementAction = delegate { };
+			circleCollider.enabled = false;
+			StartCoroutine(die(0.5f));
+			Events.getInstance().heroBeaten.Invoke();
+		}
+	}
+
+	IEnumerator onHeroDamage(IDamager damager) {
 		movementAction = delegate { };
 		circleCollider.enabled = false;
+		yield return damageEffects(0.5f, damager.getPosition());
+		movementAction = move;
+		yield return invulnerability(0.5f);
+		circleCollider.enabled = true;
+	}
 
+	IEnumerator damageEffects(float duration, Vector2 position) {
 		StartCoroutine(flash(duration));
 		StartCoroutine(wobble(duration));
-		StartCoroutine(knockback(collisionPos, duration));
-
+		StartCoroutine(knockback(position, duration));
 		yield return new WaitForSeconds(duration);
-		movementAction = move;
+	}
 
-		// Invulnerability
-		StartCoroutine(blink(0.5f));
-		yield return new WaitForSeconds(0.5f);
-		circleCollider.enabled = true;
+	IEnumerator invulnerability(float duration) {
+		StartCoroutine(blink(duration));
+		yield return new WaitForSeconds(duration);
 	}
 
 

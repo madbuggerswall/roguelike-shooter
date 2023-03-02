@@ -2,12 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// IPoolable
-public abstract class Projectile : MonoBehaviour {
+public interface IDamager {
+	void dealDamage(IDamageable damageable);
+	int getDamage();
+	float getDuration();
+	Vector2 getPosition();
+}
+
+public abstract class Projectile : MonoBehaviour, IPoolable, IDamager {
 	[SerializeField] float speed = 8f;
 	[SerializeField] float offsetAngle;
 
 	int damage = 8;
+	float damageDuration = 0.3f;
 
 	Vector2 direction;
 	Rigidbody2D rigidBody;
@@ -16,14 +23,15 @@ public abstract class Projectile : MonoBehaviour {
 		rigidBody = GetComponent<Rigidbody2D>();
 	}
 
-	// TODO: Break on walls too
+	// TODO: Break on walls too, IDamager calls damage operations
 	void OnCollisionEnter2D(Collision2D other) {
-		if (other.gameObject.layer == Layers.enemy) {
-			other.gameObject.GetComponent<Enemy>().takeDamage(damage);
-			gameObject.SetActive(false);
-			Events.getInstance().enemyHit.Invoke(other);
-			LevelManager.getInstance().getParticles().spawnParticles(this, rigidBody.position);
-		}
+		IDamageable damageable;
+		if (other.gameObject.TryGetComponent<IDamageable>(out damageable))
+			dealDamage(damageable);
+
+		LevelManager.getInstance().getParticles().spawnParticles(this, rigidBody.position);
+		LevelManager.getInstance().getCameraImpulse().impulse(other);
+		returnToPool();
 	}
 
 	void FixedUpdate() {
@@ -41,12 +49,18 @@ public abstract class Projectile : MonoBehaviour {
 		rigidBody.MovePosition(rigidBody.position + direction * speed * Time.fixedDeltaTime);
 	}
 
-	// Atan solution
 	void lookAtDirection(Vector2 direction) {
 		float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - offsetAngle;
 		transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 	}
 
-	// Getters
+	// IDamager
+	public void dealDamage(IDamageable damageable) { damageable.takeDamage(this); }
 	public int getDamage() { return damage; }
+	public float getDuration() { return damageDuration; }
+	public Vector2 getPosition() { return transform.position; }
+
+	// IPoolable
+	public void reset() { }
+	public void returnToPool() { gameObject.SetActive(false); }
 }

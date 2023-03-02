@@ -4,23 +4,14 @@ using UnityEngine.Events;
 class Events {
 	static Events instance;
 
-	public UnityEvent<Collision2D> playerHit;
-
-	public UnityEvent projectileThrown;
-
-	public UnityEvent<Collision2D> enemyHit;
-	public UnityEvent<Enemy, Vector2> enemyBeaten;
+	public UnityEvent<Enemy> enemyBeaten;
+	public UnityEvent heroBeaten;
 
 	public UnityEvent<int> waveBegan;
 
 	Events() {
-		playerHit = new UnityEvent<Collision2D>();
-
-		projectileThrown = new UnityEvent();
-
-		enemyHit = new UnityEvent<Collision2D>();
-		enemyBeaten = new UnityEvent<Enemy, Vector2>();
-
+		enemyBeaten = new UnityEvent<Enemy>();
+		heroBeaten = new UnityEvent();
 		waveBegan = new UnityEvent<int>();
 	}
 
