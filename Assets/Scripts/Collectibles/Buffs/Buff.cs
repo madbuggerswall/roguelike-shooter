@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class Buff : Collectible {
 	public abstract void apply();
 
-	public override void reset() { throw new System.NotImplementedException(); }
-	public override void returnToPool() { throw new System.NotImplementedException(); }
-	public override void onCollect() { gameObject.SetActive(false); }
+	public override void onCollect() {
+		LevelManager.getInstance().getParticles().spawnParticles(this);
+	}
 }

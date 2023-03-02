@@ -5,7 +5,8 @@ using UnityEngine;
 public abstract class Consumable : Collectible {
 	[SerializeField] int healthBuff;
 
-	public override void reset() { throw new System.NotImplementedException(); }
-	public override void returnToPool() { throw new System.NotImplementedException(); }
-	public override void onCollect() { gameObject.SetActive(false); }
+	public override void onCollect() {
+		base.onCollect();
+		LevelManager.getInstance().getParticles().spawnParticles(this);
+	}
 }

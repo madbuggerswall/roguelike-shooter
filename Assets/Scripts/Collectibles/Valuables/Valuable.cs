@@ -5,9 +5,10 @@ using UnityEngine;
 public abstract class Valuable : Collectible {
 	[SerializeField] int coinValue;
 
-	public override void reset() { throw new System.NotImplementedException(); }
-	public override void returnToPool() { throw new System.NotImplementedException(); }
-	public override void onCollect() { gameObject.SetActive(false); }
+	public override void onCollect() {
+		base.onCollect();
+		LevelManager.getInstance().getParticles().spawnParticles(this);
+	}
 
 	public int getCoinValue() { return coinValue; }
 }

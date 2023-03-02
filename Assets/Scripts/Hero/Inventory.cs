@@ -36,25 +36,30 @@ public class Inventory : MonoBehaviour {
 	}
 
 	void equip(Weapon weapon) {
-		this.weapon = weapon;
-		// TODO
-		this.weapon.transform.SetParent(FindObjectOfType<InventoryUI>().getWeaponSlot());
-		this.weapon.transform.localPosition = Vector2.zero;
-
 		weapon.onCollect();
+
+		this.weapon = weapon;
+		this.weapon.transform.SetParent(inventoryUI.getWeaponSlot());
+		this.weapon.transform.localPosition = Vector2.zero;
 	}
 
 	void equip(Armor armor) {
-		this.armor = armor;
-		this.armor.transform.SetParent(transform);
-		this.armor.transform.localPosition = Vector2.zero;
-
 		armor.onCollect();
+
+		this.armor = armor;
+		this.armor.transform.SetParent(inventoryUI.getArmorSlot());
+		this.armor.transform.localPosition = Vector2.zero;
 	}
 
 	void equip(Buff buff) {
-		buffs.Add(buff);
 		buff.onCollect();
+		Transform buffSlot = inventoryUI.getEmptyBuffSlot();
+
+		if (buffSlot is null) return;
+		
+		buffs.Add(buff);
+		buff.transform.SetParent(buffSlot);
+		buff.transform.localPosition = Vector2.zero;
 	}
 
 	void earn(Valuable valuable) {

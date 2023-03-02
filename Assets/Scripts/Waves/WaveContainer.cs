@@ -21,7 +21,7 @@ namespace Waves {
 
 			// queue.Enqueue(new Wave(jelly, jelly, jelly, jelly));
 			queue.Enqueue(new Wave((4, jelly), (2, wizard)));
-			queue.Enqueue(new Wave((6, jelly)));
+			queue.Enqueue(new Wave((8, jelly)));
 			queue.Enqueue(new Wave((2, ghost)));
 			queue.Enqueue(new Wave((4, jelly), (2, ghost)));
 			queue.Enqueue(new Wave((8, jelly), (2, ghost)));
@@ -31,6 +31,9 @@ namespace Waves {
 			queue.Enqueue(new Wave((8, jelly), (2, brute)));
 			queue.Enqueue(new Wave((4, jelly), (4, brute), (4, ghost)));
 			queue.Enqueue(new Wave((2, wizard)));
+			queue.Enqueue(new Wave((4, jelly), (2, wizard)));
+			queue.Enqueue(new Wave((8, jelly), (2, wizard)));
+			queue.Enqueue(new Wave((4, jelly), (4, ghost), (4, wizard)));
 
 			Debug.Log("Total wave count: " + queue.Count);
 		}

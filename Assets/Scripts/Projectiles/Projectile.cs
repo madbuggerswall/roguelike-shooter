@@ -29,7 +29,7 @@ public abstract class Projectile : MonoBehaviour, IPoolable, IDamager {
 		if (other.gameObject.TryGetComponent<IDamageable>(out damageable))
 			dealDamage(damageable);
 
-		LevelManager.getInstance().getParticles().spawnParticles(this, rigidBody.position);
+		LevelManager.getInstance().getParticles().spawnParticles(this);
 		LevelManager.getInstance().getCameraImpulse().impulse(other);
 		returnToPool();
 	}
