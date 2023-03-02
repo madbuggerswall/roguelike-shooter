@@ -16,23 +16,23 @@ class DropTableContainer {
 		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
 
 		jellyDrops = new DropTable(
-			new DropEntry(.6f, prefabs.getRandomBuff()),
+			new DropEntry(.6f, prefabs.getValuable<Coin>()),
 			new DropEntry(.1f, prefabs.getValuable<Ring>()),
 			new DropEntry(.01f, prefabs.getValuable<Bracelet>()),
 			new DropEntry(.01f, prefabs.getConsumable<Beef>()),
 			new DropEntry(.01f, prefabs.getConsumable<Potion>()),
 			new DropEntry(.01f, prefabs.getArmor<WoodShield>()),
-			new DropEntry(.01f, prefabs.getRandomBuff()));
+			new RandomBuff(.01f));
 
 		ghostDrops = new DropTable(
 			new DropEntry(.5f, prefabs.getValuable<Coin>()),
 			new DropEntry(.2f, prefabs.getValuable<Ring>()),
 			new DropEntry(.1f, prefabs.getValuable<Bracelet>()),
-			new DropEntry(.05f, prefabs.getConsumable<Beef>()),
-			new DropEntry(.05f, prefabs.getConsumable<Potion>()),
-			new DropEntry(.01f, prefabs.getArmor<WoodShield>()),
-			new DropEntry(.01f, prefabs.getArmor<BodyArmor>()),
-			new DropEntry(.01f, prefabs.getRandomBuff()));
+			new DropEntry(.04f, prefabs.getConsumable<Beef>()),
+			new DropEntry(.04f, prefabs.getConsumable<Potion>()),
+			new DropEntry(.04f, prefabs.getArmor<WoodShield>()),
+			new DropEntry(.02f, prefabs.getArmor<BodyArmor>()),
+			new RandomBuff(.02f));
 
 		bruteDrops = new DropTable(
 			new DropEntry(.4f, prefabs.getValuable<Coin>()),
@@ -42,7 +42,7 @@ class DropTableContainer {
 			new DropEntry(.05f, prefabs.getConsumable<Potion>()),
 			new DropEntry(.05f, prefabs.getArmor<WoodShield>()),
 			new DropEntry(.05f, prefabs.getArmor<BodyArmor>()),
-			new DropEntry(.05f, prefabs.getRandomBuff()));
+			new RandomBuff(.05f));
 
 		wizardDrops = new DropTable(
 			new DropEntry(.2f, prefabs.getValuable<Coin>()),
@@ -52,7 +52,7 @@ class DropTableContainer {
 			new DropEntry(.1f, prefabs.getConsumable<Potion>()),
 			new DropEntry(.1f, prefabs.getArmor<WoodShield>()),
 			new DropEntry(.1f, prefabs.getArmor<BodyArmor>()),
-			new DropEntry(.1f, prefabs.getRandomBuff()));
+			new RandomBuff(.1f));
 
 	}
 

@@ -189,6 +189,7 @@ public class Prefabs : MonoBehaviour {
 		}
 	}
 
+	// Random
 	public Buff getRandomBuff() {
 		switch (Random.Range(0, 6)) {
 			case 0: return damageBuff;
@@ -197,7 +198,18 @@ public class Prefabs : MonoBehaviour {
 			case 3: return healthBuff;
 			case 4: return magnetBuff;
 			case 5: return movementBuff;
+			
 			default: return damageBuff;
+		}
+	}
+
+	public Weapon getRandomWeapon() {
+		switch (Random.Range(0, 6)) {
+			case 0: return sword;
+			case 1: return axe;
+			case 2: return bow;
+			
+			default: return sword;
 		}
 	}
 }
