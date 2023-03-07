@@ -94,9 +94,9 @@ public class Particles : MonoBehaviour {
 	GameObject getParticles(Enemy enemy) {
 		switch (enemy) {
 			case Jelly: return jellyPrefab;
-			case Ghost: return jellyPrefab;
-			case Brute: return jellyPrefab;
-			case Wizard: return jellyPrefab;
+			case Ghost: return ghostPrefab;
+			case Brute: return brutePrefab;
+			case Wizard: return wizardPrefab;
 
 			default: return jellyPrefab;
 		}

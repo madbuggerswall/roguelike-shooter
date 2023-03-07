@@ -59,5 +59,6 @@ public class HeroShooter : MonoBehaviour {
 		ObjectPool objectPool = ProjectileContainer.getInstance().GetComponentInChildren<ObjectPool>();
 		Projectile projectile = objectPool.spawn(weapon.getProjectilePrefab(), transform.position);
 		projectile.throwAtTarget(target, weapon.getProjectileDamage(), weapon.getProjectileSpeed());
+		LevelManager.getInstance().getSoundManager().getProjectileSound().play(projectile);
 	}
 }

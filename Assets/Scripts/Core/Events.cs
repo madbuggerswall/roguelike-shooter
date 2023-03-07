@@ -6,7 +6,6 @@ class Events {
 
 	public UnityEvent<Enemy> enemyBeaten;
 	public UnityEvent heroBeaten;
-
 	public UnityEvent<int> waveBegan;
 
 	Events() {

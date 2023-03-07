@@ -20,7 +20,7 @@ namespace Waves {
 			Enemy wizard = prefabs.getEnemy<Wizard>();
 
 			// queue.Enqueue(new Wave(jelly, jelly, jelly, jelly));
-			queue.Enqueue(new Wave((4, jelly), (2, wizard)));
+			queue.Enqueue(new Wave((4, jelly)));
 			queue.Enqueue(new Wave((8, jelly)));
 			queue.Enqueue(new Wave((2, ghost)));
 			queue.Enqueue(new Wave((4, jelly), (2, ghost)));

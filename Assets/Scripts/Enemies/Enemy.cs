@@ -102,19 +102,27 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 
 
 	// Reactions | Effects
+
 	protected IEnumerator notice(float duration) {
-		LevelManager.getInstance().getSoundManager().playHeroNoticed();
-
-		float jumpHeight = duration;
+		LevelManager.getInstance().getSoundManager().getEnemySounds().playNotice();
 		exclamation.enabled = true;
+		yield return noticeMotion(duration);
+		exclamation.enabled = false;
+	}
 
+	IEnumerator die(float duration) {
+		LevelManager.getInstance().getSoundManager().getEnemySounds().playDie();
+		yield return dieMotion(duration);
+		returnToPool();
+	}
+
+	IEnumerator noticeMotion(float duration) {
+		float jumpHeight = duration;
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
 			moveToPosition(initialPosition + Vector2.up * jumpHeight * Mathf.Sin(Mathf.PI * time / duration));
 			yield return new WaitForFixedUpdate();
 		}
-
-		exclamation.enabled = false;
 	}
 
 	IEnumerator knockback(float duration) {
@@ -125,7 +133,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 		}
 	}
 
-	IEnumerator die(float duration) {
+	IEnumerator dieMotion(float duration) {
 		Vector2 initialPosition = rigidBody.position;
 		for (float time = 0; time < duration; time += Time.fixedDeltaTime) {
 			rigidBody.MovePosition(initialPosition + Vector2.up * Mathf.Sin(Mathf.PI * time / duration));
@@ -232,8 +240,8 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 	}
 
 	IEnumerator damageEffects(float duration, float cooldown) {
+		LevelManager.getInstance().getSoundManager().getEnemySounds().playDamage();
 		exclamation.enabled = false;
-
 		StartCoroutine(flash(duration));
 		StartCoroutine(wobble(duration));
 		StartCoroutine(knockback(duration));

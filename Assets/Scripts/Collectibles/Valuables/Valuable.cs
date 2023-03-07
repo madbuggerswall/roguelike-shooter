@@ -8,6 +8,7 @@ public abstract class Valuable : Collectible {
 	public override void onCollect() {
 		base.onCollect();
 		LevelManager.getInstance().getParticles().spawnParticles(this);
+		LevelManager.getInstance().getSoundManager().getCollectibleSound().play(this);
 	}
 
 	public int getCoinValue() { return coinValue; }

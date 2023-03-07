@@ -8,5 +8,6 @@ public abstract class Consumable : Collectible {
 	public override void onCollect() {
 		base.onCollect();
 		LevelManager.getInstance().getParticles().spawnParticles(this);
+		LevelManager.getInstance().getSoundManager().getCollectibleSound().play(this);
 	}
 }

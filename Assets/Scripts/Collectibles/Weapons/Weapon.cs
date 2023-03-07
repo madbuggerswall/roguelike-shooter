@@ -13,11 +13,9 @@ public abstract class Weapon : Collectible {
 	[SerializeField] protected float projectileSpeed;
 	[SerializeField] protected int projectileDamage;
 
-	// AudioClip onEquip
-	// ParticleSystem onEquip
-
 	public override void onCollect() {
 		LevelManager.getInstance().getParticles().spawnParticles(this);
+		LevelManager.getInstance().getSoundManager().getCollectibleSound().play(this);
 	}
 
 	// Getters

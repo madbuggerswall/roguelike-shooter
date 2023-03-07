@@ -8,5 +8,6 @@ public abstract class Buff : Collectible {
 
 	public override void onCollect() {
 		LevelManager.getInstance().getParticles().spawnParticles(this);
+		LevelManager.getInstance().getSoundManager().getCollectibleSound().play(this);
 	}
 }
