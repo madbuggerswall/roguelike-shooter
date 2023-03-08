@@ -35,15 +35,12 @@ public class CollectibleSound : MonoBehaviour {
 			case Armor: playClip(armor); break;
 			case Buff: playClip(buff); break;
 			case Consumable: playClip(consumable); break;
+			case Valuable: playClip(coin); break;
 			case Weapon: playClip(weapon); break;
 
 			case SmallPot: playClip(pot); break;
 			case Pot: playClip(pot); break;
 			case Chest: playClip(chest); break;
-
-			case Coin: playClip(coin); break;
-			case Ring: playClip(ring); break;
-			case Bracelet: playClip(bracelet); break;
 
 			default: playClip(coin); break;
 		}

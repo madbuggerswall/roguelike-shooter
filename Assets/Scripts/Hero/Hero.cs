@@ -117,24 +117,28 @@ public class Hero : MonoBehaviour, IDamageable {
 		health -= damager.getDamage();
 		healthBarUI.updateHealthBar(health, maxHealth);
 
-		if (health > 0) {
+		if (health > 0)
 			StartCoroutine(onHeroDamage(damager));
-		} else {
-			// Stop and die
-			movementAction = delegate { };
-			circleCollider.enabled = false;
-			StartCoroutine(die(0.5f));
-			Events.getInstance().heroBeaten.Invoke();
-		}
+		else
+			StartCoroutine(onHeroDie());
 	}
 
 	IEnumerator onHeroDamage(IDamager damager) {
+		LevelManager.getInstance().getSoundManager().getPlayerSound().playDamage();
 		movementAction = delegate { };
 		circleCollider.enabled = false;
 		yield return damageEffects(0.5f, damager.getPosition());
 		movementAction = move;
 		yield return invulnerability(0.5f);
 		circleCollider.enabled = true;
+	}
+
+	IEnumerator onHeroDie() {
+		LevelManager.getInstance().getSoundManager().getPlayerSound().playDie();
+		movementAction = delegate { };
+		circleCollider.enabled = false;
+		yield return die(0.5f);
+		Events.getInstance().heroBeaten.Invoke();
 	}
 
 	IEnumerator damageEffects(float duration, Vector2 position) {

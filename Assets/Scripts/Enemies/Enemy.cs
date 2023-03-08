@@ -53,14 +53,12 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 	void OnCollisionEnter2D(Collision2D other) {
 		if (other.gameObject.layer == Layers.hero) {
 			other.gameObject.GetComponent<IDamageable>().takeDamage(this);
-			// LevelManager.getInstance().getParticles().spawnParticles(this, rigidBody.position);
 			LevelManager.getInstance().getCameraImpulse().impulse(other);
 		}
 	}
 
 	// Behavior | Strategy
 	protected abstract IEnumerator chaseAndAttack();
-
 
 	// Movement
 	protected virtual IEnumerator chase(Transform target) {
@@ -76,6 +74,16 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 
 	// Attack
 	protected IEnumerator dash(Transform target, float duration, float distance) {
+		LevelManager.getInstance().getSoundManager().getEnemySounds().playDash();
+		yield return dashMotion(target, duration, distance);
+	}
+
+	protected IEnumerator melee(Transform target, float duration, float distance) {
+		LevelManager.getInstance().getSoundManager().getEnemySounds().playMelee();
+		yield return meleeMotion(target, duration, distance);
+	}
+
+	IEnumerator dashMotion(Transform target, float duration, float distance) {
 		float speed = distance / duration;
 		float drag = speed;
 
@@ -90,7 +98,7 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 		}
 	}
 
-	protected IEnumerator melee(Transform target, float duration, float distance) {
+	IEnumerator meleeMotion(Transform target, float duration, float distance) {
 		Vector2 initialPosition = rigidBody.position;
 		Vector2 direction = (target.position - transform.position).normalized;
 
@@ -140,8 +148,6 @@ public abstract class Enemy : MonoBehaviour, IPoolable, IDamageable, IDamager {
 			rigidBody.MoveRotation(time / duration * 90);
 			yield return new WaitForFixedUpdate();
 		}
-
-		returnToPool();
 	}
 
 	IEnumerator stride(float movementSpeed) {
