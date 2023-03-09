@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// TODO Struct WeaponProperties
+
 public abstract class Weapon : Collectible {
 	[SerializeField] protected float baseAttackRadius;
 	[SerializeField] protected float baseAttackPeriod;
@@ -31,10 +34,22 @@ public abstract class Weapon : Collectible {
 		transform.SetParent(LevelManager.getInstance().getDropManager().getPoolTransform());
 	}
 
+	// Setters
+	public void setAttackRadius(float attackRadius) { this.attackRadius = attackRadius; }
+	public void setAttackPeriod(float attackPeriod) { this.attackPeriod = attackPeriod; }
+	public void setProjectileSpeed(float projectileSpeed) { this.projectileSpeed = projectileSpeed; }
+	public void setProjectileDamage(int projectileDamage) { this.projectileDamage = projectileDamage; }
+
 	// Getters
 	public float getAttackRadius() { return attackRadius; }
 	public float getAttackPeriod() { return attackPeriod; }
 	public float getProjectileSpeed() { return projectileSpeed; }
 	public int getProjectileDamage() { return projectileDamage; }
+	
+	public float getBaseAttackRadius() { return baseAttackRadius; }
+	public float getBaseAttackPeriod() { return baseAttackPeriod; }
+	public float getBaseProjectileSpeed() { return baseProjectileSpeed; }
+	public int getBaseProjectileDamage() { return baseProjectileDamage; }
+	
 	public abstract Projectile getProjectilePrefab();
 }

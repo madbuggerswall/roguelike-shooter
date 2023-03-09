@@ -12,9 +12,9 @@ public class DropManager : MonoBehaviour {
 	}
 
 	void Start() {
-
 		// Drop a random weapon. Position of the weapon should be determined by Grid/Map class
 		objectPool.spawn(LevelManager.getInstance().getPrefabs().getWeapon<Sword>());
+		objectPool.spawn(LevelManager.getInstance().getPrefabs().getBuff<DamageBuff>(), new Vector3(6, 0, 0));
 		Events.getInstance().enemyBeaten.AddListener(spawnDrops);
 	}
 

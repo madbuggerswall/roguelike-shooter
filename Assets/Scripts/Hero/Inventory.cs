@@ -51,14 +51,13 @@ public class Inventory : MonoBehaviour {
 	}
 
 	void equip(Buff buff) {
-		buff.onCollect();
 		Transform buffSlot = LevelManager.getInstance().getUIManager().getInventoryUI().getEmptyBuffSlot();
-
 		if (buffSlot is null) return;
 
 		buffs.Add(buff);
 		buff.transform.SetParent(buffSlot);
 		buff.transform.localPosition = Vector2.zero;
+		buff.onCollect();
 	}
 
 	void earn(Valuable valuable) {
