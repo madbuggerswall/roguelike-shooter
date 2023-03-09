@@ -19,17 +19,16 @@ public class Hero : MonoBehaviour, IDamageable {
 
 	Rigidbody2D rigidBody;
 	CircleCollider2D circleCollider;
-	HeroInput playerInput;
 
-	// Remove this
-	HealthBarUI healthBarUI;
+	HeroInput playerInput;
+	Inventory inventory;
 
 	// MonoBehavior
 	void Awake() {
 		rigidBody = GetComponent<Rigidbody2D>();
 		circleCollider = GetComponent<CircleCollider2D>();
 		playerInput = GetComponent<HeroInput>();
-		healthBarUI = FindObjectOfType<HealthBarUI>();
+		inventory = GetComponentInChildren<Inventory>();
 	}
 
 	void Start() {
@@ -114,21 +113,24 @@ public class Hero : MonoBehaviour, IDamageable {
 
 	// IDamageable and damage effects
 	public void takeDamage(IDamager damager) {
-		health -= damager.getDamage();
-		healthBarUI.updateHealthBar(health, maxHealth);
+		int shieldAmount = inventory.getArmor()?.getShieldAmount() ?? 0;
+		int remainingDamage = Mathf.Max(damager.getDamage() - shieldAmount, 0);
+		inventory.getArmor()?.takeDamage(damager);
 
-		if (health > 0)
-			StartCoroutine(onHeroDamage(damager));
-		else
-			StartCoroutine(onHeroDie());
+		health -= remainingDamage;
+		LevelManager.getInstance().getUIManager().getHealthBarUI().updateHealthBar(health, maxHealth);
+
+		StartCoroutine(health > 0 ? onHeroDamage(damager) : onHeroDie());
 	}
 
 	IEnumerator onHeroDamage(IDamager damager) {
 		LevelManager.getInstance().getSoundManager().getPlayerSound().playDamage();
 		movementAction = delegate { };
 		circleCollider.enabled = false;
+
 		yield return damageEffects(0.5f, damager.getPosition());
 		movementAction = move;
+
 		yield return invulnerability(0.5f);
 		circleCollider.enabled = true;
 	}
@@ -183,8 +185,14 @@ public class Hero : MonoBehaviour, IDamageable {
 		transform.localScale = initialScale;
 	}
 
+	// Upgrade interface?
+	public void addHealth(int healthBuff) {
+		this.health = Mathf.Clamp(health + healthBuff, 0, maxHealth);
+		LevelManager.getInstance().getUIManager().getHealthBarUI().updateHealthBar(health, maxHealth);
+	}
 
 	// Getters
 	public int getHealth() { return health; }
 	public int getMaxHealth() { return maxHealth; }
+	public Inventory getInventory() { return inventory; }
 }

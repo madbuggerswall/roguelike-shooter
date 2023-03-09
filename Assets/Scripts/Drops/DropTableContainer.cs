@@ -16,7 +16,7 @@ class DropTableContainer {
 		Prefabs prefabs = LevelManager.getInstance().getPrefabs();
 
 		jellyDrops = new DropTable(
-			new DropEntry(.6f, prefabs.getValuable<Coin>()),
+			new DropEntry(.6f, prefabs.getArmor<WoodShield>()),
 			new DropEntry(.1f, prefabs.getValuable<Ring>()),
 			new DropEntry(.01f, prefabs.getValuable<Bracelet>()),
 			new DropEntry(.01f, prefabs.getConsumable<Beef>()),

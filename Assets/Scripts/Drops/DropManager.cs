@@ -23,5 +23,8 @@ public class DropManager : MonoBehaviour {
 		if (drop is not null)
 			objectPool.spawn(drop, enemy.transform.position);
 	}
+
+	// For items that need to return to pool via parenting
+	public Transform getPoolTransform() { return objectPool.transform; }
 }
 

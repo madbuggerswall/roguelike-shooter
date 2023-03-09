@@ -4,7 +4,14 @@ using UnityEngine;
 
 public abstract class Container : Collectible {
 	public override void onCollect() {
-		base.onCollect();
 		LevelManager.getInstance().getParticles().spawnParticles(this);
+	}
+	// IPoolable
+	public override void reset() {
+		throw new System.NotImplementedException();
+	}
+
+	public override void returnToPool() {
+		gameObject.SetActive(false);
 	}
 }

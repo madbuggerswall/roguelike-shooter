@@ -10,4 +10,14 @@ public abstract class Buff : Collectible {
 		LevelManager.getInstance().getParticles().spawnParticles(this);
 		LevelManager.getInstance().getSoundManager().getCollectibleSound().play(this);
 	}
+
+	// IPoolable
+	public override void reset() {
+		throw new System.NotImplementedException();
+	}
+
+	public override void returnToPool() {
+		gameObject.SetActive(false);
+		transform.SetParent(LevelManager.getInstance().getDropManager().getPoolTransform());
+	}
 }

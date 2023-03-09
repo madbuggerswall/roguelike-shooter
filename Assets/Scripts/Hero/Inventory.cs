@@ -7,15 +7,14 @@ public class Inventory : MonoBehaviour {
 
 	Weapon weapon;
 	Armor armor;
+
 	List<Buff> buffs;
 
 	HashSet<Collider2D> attractedItems;
-	InventoryUI inventoryUI;
 
 	void Awake() {
 		attractedItems = new HashSet<Collider2D>();
 		buffs = new List<Buff>();
-		inventoryUI = FindObjectOfType<InventoryUI>();
 	}
 
 	void Start() {
@@ -23,56 +22,57 @@ public class Inventory : MonoBehaviour {
 	}
 
 	void collect(Collectible collectible) {
-		if (collectible is Weapon)
-			equip(collectible as Weapon);
-		if (collectible is Armor)
-			equip(collectible as Armor);
-		else if (collectible is Buff)
-			equip(collectible as Buff);
-		else if (collectible is Valuable)
-			earn(collectible as Valuable);
-		else if (collectible is Consumable)
-			consume(collectible as Consumable);
+		switch (collectible) {
+			case Weapon: equip(collectible as Weapon); break;
+			case Armor: equip(collectible as Armor); break;
+			case Buff: equip(collectible as Buff); break;
+			case Valuable: earn(collectible as Valuable); break;
+			case Consumable: consume(collectible as Consumable); break;
+		}
 	}
 
 	void equip(Weapon weapon) {
-		weapon.onCollect();
+		Transform weaponSlot = LevelManager.getInstance().getUIManager().getInventoryUI().getWeaponSlot();
 
+		weapon.onCollect();
 		this.weapon = weapon;
-		this.weapon.transform.SetParent(inventoryUI.getWeaponSlot());
+		this.weapon.transform.SetParent(weaponSlot);
 		this.weapon.transform.localPosition = Vector2.zero;
 	}
 
 	void equip(Armor armor) {
-		armor.onCollect();
+		Transform armorSlot = LevelManager.getInstance().getUIManager().getInventoryUI().getArmorSlot();
 
+		armor.onCollect();
+		this.armor?.returnToPool();
 		this.armor = armor;
-		this.armor.transform.SetParent(inventoryUI.getArmorSlot());
+		this.armor.transform.SetParent(armorSlot);
 		this.armor.transform.localPosition = Vector2.zero;
 	}
 
 	void equip(Buff buff) {
 		buff.onCollect();
-		Transform buffSlot = inventoryUI.getEmptyBuffSlot();
+		Transform buffSlot = LevelManager.getInstance().getUIManager().getInventoryUI().getEmptyBuffSlot();
 
 		if (buffSlot is null) return;
-		
+
 		buffs.Add(buff);
 		buff.transform.SetParent(buffSlot);
 		buff.transform.localPosition = Vector2.zero;
 	}
 
 	void earn(Valuable valuable) {
+		InventoryUI inventoryUI = LevelManager.getInstance().getUIManager().getInventoryUI();
 		coinAmount += valuable.getCoinValue();
 		inventoryUI.updateCoinAmount(coinAmount);
 		valuable.onCollect();
 	}
 
 	void consume(Consumable consumable) {
-		// Do consumable stuff here
 		consumable.onCollect();
 	}
 
+	// Magnet
 	IEnumerator checkItemsAround(float radius, float period) {
 		ContactFilter2D contactFilter = new ContactFilter2D();
 		contactFilter.SetLayerMask(Layers.collectibleMask);
@@ -110,6 +110,8 @@ public class Inventory : MonoBehaviour {
 			collect(item.GetComponent<Collectible>());
 		}
 	}
+
+	public void discardArmor() { armor = null; }
 
 	// Getters
 	public Weapon getWeapon() { return weapon; }

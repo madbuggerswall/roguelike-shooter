@@ -10,8 +10,10 @@ public class LevelManager : MonoBehaviour {
 	Hero hero;
 	Prefabs prefabs;
 	Particles particles;
+	DropManager dropManager;
 	SoundManager soundManager;
 	CameraImpulse cameraImpulse;
+	UIManager userInterfaceManager;
 
 	void Awake() {
 		assertSingleton();
@@ -26,15 +28,19 @@ public class LevelManager : MonoBehaviour {
 		hero = FindObjectOfType<Hero>();
 		prefabs = FindObjectOfType<Prefabs>();
 		particles = FindObjectOfType<Particles>();
+		dropManager = FindObjectOfType<DropManager>();
 		soundManager = FindObjectOfType<SoundManager>();
 		cameraImpulse = FindObjectOfType<CameraImpulse>();
+		userInterfaceManager = FindObjectOfType<UIManager>();
 	}
 
 	public Hero getHero() { return hero; }
 	public Prefabs getPrefabs() { return prefabs; }
 	public Particles getParticles() { return particles; }
+	public DropManager getDropManager() { return dropManager; }
 	public SoundManager getSoundManager() { return soundManager; }
 	public CameraImpulse getCameraImpulse() { return cameraImpulse; }
+	public UIManager getUIManager() { return userInterfaceManager; }
 
 	// Singleton
 	public static LevelManager getInstance() { return instance; }

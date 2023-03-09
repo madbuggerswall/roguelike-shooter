@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Collectible : MonoBehaviour, IPoolable {
-	public virtual void onCollect() {
-		returnToPool();
-	}
+	public abstract void onCollect();
 
-	public virtual void reset() { }
-	public virtual void returnToPool() { gameObject.SetActive(false); }
+	public abstract void reset();
+	public abstract void returnToPool();
 }
